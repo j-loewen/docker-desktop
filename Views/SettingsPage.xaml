@@ -1,0 +1,21 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DockerDesktop.Views.SettingsPage"
+             xmlns:viewmodels="clr-namespace:DockerDesktop.ViewModels"
+             xmlns:models="clr-namespace:DockerDesktop.Models"
+             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+             ios:Page.UseSafeArea="True"
+             x:DataType="viewmodels:SettingsViewModel"
+             Shell.FlyoutBehavior="Flyout"
+             Title="{Binding Title}">
+
+    <StackLayout Padding="10">
+        <Label Text="Settings"
+               FontSize="24"
+               HorizontalOptions="Center"/>
+        <Entry Placeholder="Host"
+               Text="{Binding Settings.Host, Mode=TwoWay}"/>
+        <Button Text="Save"
+                Command="{Binding SaveCommand}"/>
+    </StackLayout>
+</ContentPage>

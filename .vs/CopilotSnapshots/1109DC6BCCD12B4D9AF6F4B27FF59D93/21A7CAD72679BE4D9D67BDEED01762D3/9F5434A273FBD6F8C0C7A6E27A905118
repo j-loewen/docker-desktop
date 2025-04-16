@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DockerDesktop.Views.MainPage"
+             xmlns:viewmodels="clr-namespace:DockerDesktop.ViewModels"
+             xmlns:models="clr-namespace:DockerDesktop.Models"
+             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+             ios:Page.UseSafeArea="True"
+             x:DataType="viewmodels:MainViewModel"
+             Shell.FlyoutBehavior="Flyout"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Stroke" Value="#20000000" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 8" />
+            <Setter Property="BackgroundColor" Value="White" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Margin" Value="8" />
+            <Setter Property="Shadow">
+                <Shadow Brush="#40000000"
+                        Offset="0,4"
+                        Radius="8"/>
+            </Setter>
+        </Style>
+        
+        <Style x:Key="ProgressBarStyle" TargetType="ProgressBar">
+            <Setter Property="MinimumHeightRequest" Value="6" />
+            <Setter Property="ProgressColor" Value="#4CAF50" />
+            <Setter Property="BackgroundColor" Value="#E0E0E0" />
+        </Style>
+
+        <Style x:Key="HeaderLabelStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="#202020" />
+        </Style>
+
+        <Style x:Key="SubHeaderStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="TextColor" Value="#666666" />
+        </Style>
+
+        <Style x:Key="TableHeaderStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="#666666" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Connect" Command="{Binding ConnectCommand}" />
+        <ToolbarItem Text="Refresh" Command="{Binding RefreshCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="16" Padding="16">
+            <!-- Header Section -->
+            <Border Style="{StaticResource CardStyle}">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Containers" 
+                           Style="{StaticResource HeaderLabelStyle}"/>
+
+                    <!-- Resource Usage Panel -->
+                    <Grid RowSpacing="12" ColumnSpacing="16" 
+                          ColumnDefinitions="*, Auto">
+                        <!-- CPU Usage -->
+                        <VerticalStackLayout Grid.Column="0">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Text="Container CPU usage" 
+                                       Style="{StaticResource SubHeaderStyle}"/>
+                                <Label Text="1.06% / 1000% (10 cores allocated)" 
+                                       Grid.Column="1" 
+                                       Style="{StaticResource SubHeaderStyle}"/>
+                            </Grid>
+                            <ProgressBar Progress="0.106" 
+                                       Style="{StaticResource ProgressBarStyle}"/>
+                        </VerticalStackLayout>
+
+                        <Button Text="Show charts ▼" 
+                                Grid.Column="1"
+                                BackgroundColor="Transparent"
+                                TextColor="{StaticResource Primary}"
+                                FontSize="14"
+                                BorderWidth="0"/>
+                    </Grid>
+
+                    <!-- Memory Usage -->
+                    <VerticalStackLayout>
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Text="Container memory usage" 
+                                   Style="{StaticResource SubHeaderStyle}"/>
+                            <Label Text="127.45 MB / 15.1 GB" 
+                                   Grid.Column="1"
+                                   Style="{StaticResource SubHeaderStyle}"/>
+                        </Grid>
+                        <ProgressBar Progress="0.15" 
+                                   Style="{StaticResource ProgressBarStyle}"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Search/Filter Bar -->
+            <Border Style="{StaticResource CardStyle}">
+                <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="16">
+                    <SearchBar Placeholder="Search containers"
+                              Grid.Column="0"/>
+                    
+                    <ImageButton Source="filter.png"
+                                HeightRequest="24"
+                                WidthRequest="24"
+                                Grid.Column="1"/>
+
+                    <HorizontalStackLayout Grid.Column="2" Spacing="8">
+                        <Label Text="Only show running containers"
+                               VerticalOptions="Center"/>
+                        <Switch />
+                    </HorizontalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- Containers Table -->
+            <Border Style="{StaticResource CardStyle}">
+                <VerticalStackLayout Spacing="8">
+                    <!-- Table Headers -->
+                    <Grid ColumnDefinitions="2*, 2*, *, *, *, *" 
+                          ColumnSpacing="8">
+                        <Label Text="NAME" 
+                               Style="{StaticResource TableHeaderStyle}"/>
+                        <Label Text="IMAGE" 
+                               Grid.Column="1"
+                               Style="{StaticResource TableHeaderStyle}"/>
+                        <Label Text="STATUS" 
+                               Grid.Column="2"
+                               Style="{StaticResource TableHeaderStyle}"/>
+                        <Label Text="CPU (%)" 
+                               Grid.Column="3"
+                               Style="{StaticResource TableHeaderStyle}"/>
+                        <Label Text="PORTS" 
+                               Grid.Column="4"
+                               Style="{StaticResource TableHeaderStyle}"/>
+                        <Label Text="ACTIONS" 
+                               Grid.Column="5"
+                               Style="{StaticResource TableHeaderStyle}"/>
+                    </Grid>
+
+                    <!-- Container Row (Example) -->
+                    <Grid ColumnDefinitions="2*, 2*, *, *, *, *" 
+                          ColumnSpacing="8"
+                          Padding="0,12"
+                          BackgroundColor="#F8F9FA">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="nginx-proxy"
+                                   TextColor="{StaticResource Primary}"
+                                   FontAttributes="Bold"/>
+                            <Label Text="a7e93d3f931b"
+                                   TextColor="#666666"
+                                   FontSize="12"/>
+                        </VerticalStackLayout>
+
+                        <Label Text="nginx:latest"
+                               Grid.Column="1"
+                               TextColor="{StaticResource Primary}"/>
+
+                        <HorizontalStackLayout Grid.Column="2">
+                            <Ellipse Fill="#4CAF50"
+                                    HeightRequest="8"
+                                    WidthRequest="8"
+                                    VerticalOptions="Center"
+                                    Margin="0,0,4,0"/>
+                            <Label Text="Running"
+                                   TextColor="#4CAF50"/>
+                        </HorizontalStackLayout>
+
+                        <Label Text="0.06%"
+                               Grid.Column="3"/>
+
+                        <Label Text="80:80"
+                               Grid.Column="4"/>
+
+                        <HorizontalStackLayout Grid.Column="5" 
+                                             Spacing="8">
+                            <ImageButton Source="play.png"
+                                        HeightRequest="20"
+                                        WidthRequest="20"/>
+                            <ImageButton Source="more.png"
+                                        HeightRequest="20"
+                                        WidthRequest="20"/>
+                            <ImageButton Source="trash.png"
+                                        HeightRequest="20"
+                                        WidthRequest="20"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+
+    <ActivityIndicator
+        Grid.RowSpan="2"
+        Grid.ColumnSpan="2"
+        HorizontalOptions="Fill"
+        IsRunning="{Binding IsBusy}"
+        IsVisible="{Binding IsBusy}"
+        Color="{StaticResource Primary}"
+        VerticalOptions="Center" />
+
+</ContentPage>

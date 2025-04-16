@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DockerDesktop.Views.MainPage"
+             xmlns:viewmodels="clr-namespace:DockerDesktop.ViewModels"
+             xmlns:models="clr-namespace:DockerDesktop.Models"
+             x:DataType="viewmodels:MainViewModel"
+             Title="Containers">
+
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Connect"
+                     Command="{Binding ConnectCommand}"/>
+    </ContentPage.ToolbarItems>
+
+    <!-- <VerticalStackLayout> -->
+    <Grid RowDefinitions="Auto,Auto,*,28"
+          Padding="20"
+          RowSpacing="24"
+          ColumnDefinitions="*">
+        <Grid Grid.Row="0"
+              ColumnDefinitions="*,*"
+              ColumnSpacing="24">
+            <!-- CPU Usage -->
+            <VerticalStackLayout Grid.Column="0">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Label Grid.Column="0"
+                           Text="Container CPU usage"
+                           Style="{StaticResource CaptionStyle}"/>
+                    <Image Grid.Column="1"
+                           Source="info.png"
+                           HeightRequest="16"
+                           WidthRequest="16"/>
+                </Grid>
+                <Grid ColumnDefinitions="*,Auto"
+                      Margin="0,8,0,0"
+                      ColumnSpacing="10">
+                    <ProgressBar Grid.Column="0"
+                                 Progress="0.1"
+                                 Style="{StaticResource MetricProgressBarStyle}"/>
+                    <Label Grid.Column="1"
+                           Text="10 %"
+                           Style="{StaticResource MetricValueStyle}"/>
+                </Grid>
+            </VerticalStackLayout>
+
+            <!-- Memory Usage -->
+            <VerticalStackLayout Grid.Column="1">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Label Grid.Column="0"
+                           Text="Container memory usage"
+                           Style="{StaticResource CaptionStyle}"/>
+                    <Image Grid.Column="1"
+                           Source="info.png"
+                           HeightRequest="16"
+                           WidthRequest="16"/>
+                </Grid>
+                <Grid ColumnDefinitions="*,Auto"
+                      Margin="0,8,0,0"
+                      ColumnSpacing="10">
+                    <ProgressBar Grid.Column="0"
+                                 Progress="0.5"
+                                 Style="{StaticResource MetricProgressBarStyle}"/>
+                    <Label Grid.Column="1"
+                           Text="50 %"
+                           Style="{StaticResource MetricValueStyle}"/>
+                </Grid>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Search and Filter -->
+        <Grid Grid.Row="1"
+              ColumnDefinitions="*,Auto"
+              Margin="0,24">
+            <SearchBar Placeholder="Search"
+                       Text="{Binding SearchText}"
+                       Style="{StaticResource SearchBarStyle}"/>
+
+            <HorizontalStackLayout Grid.Column="1"
+                                   Spacing="16">
+                <Image Source="list.png"
+                       HeightRequest="24"/>
+                <HorizontalStackLayout Spacing="8">
+                    <Label Text="Only show running containers"
+                           VerticalOptions="Center"/>
+                    <Switch IsToggled="{Binding ShowOnlyRunning}"/>
+                </HorizontalStackLayout>
+            </HorizontalStackLayout>
+        </Grid>
+
+        <!-- Container List -->
+        <!-- ItemsSource="{Binding FilteredContainers}" -->
+        <CollectionView Grid.Row="2"
+                        BackgroundColor="Aqua"
+                        ItemSizingStrategy="MeasureAllItems">
+            <CollectionView.Header>
+                <Grid ColumnDefinitions="2*,2*,*,*,*"
+                      Style="{StaticResource ListHeaderStyle}">
+                    <Label Grid.Column="0"
+                           Text="Name"/>
+                    <Label Grid.Column="1"
+                           Text="Image"/>
+                    <Label Grid.Column="2"
+                           Text="Status"/>
+                    <Label Grid.Column="3"
+                           Text="Ports"/>
+                    <Label Grid.Column="4"
+                           Text="Actions"/>
+                </Grid>
+            </CollectionView.Header>
+            <CollectionView.ItemsSource>
+                <x:Array Type="{x:Type models:ContainerModel}">
+                    <models:ContainerModel Id="1"
+                                           Name="Container 1"
+                                           State="Running"/>
+                    <models:ContainerModel Id="2"
+                                           Name="Container 2"
+                                           State="Stopped"/>
+                    <models:ContainerModel Id="3"
+                                           Name="Container 3"
+                                           State="Paused"/>
+                </x:Array>
+            </CollectionView.ItemsSource>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:ContainerModel">
+                    <Grid
+                        ColumnDefinitions="2*,2*,*,*,*"
+                        HorizontalOptions="Fill"
+                        Style="{StaticResource ListItemStyle}">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="{Binding Name, StringFormat='{0}'}"/>
+                            <Label Text="{Binding Id, StringFormat='{0}'}"/>
+                        </VerticalStackLayout>
+                        <Label
+                            Grid.Column="1"
+                            Text="{Binding Image.Name}"/>
+                        <HorizontalStackLayout Grid.Column="2">
+                            <Ellipse Fill="{Binding State, Converter={StaticResource StatusColorConverter}}"/>
+                            <Label Text="{Binding State}"/>
+                        </HorizontalStackLayout>
+                        <Label
+                            Grid.Column="3"
+                            Text="5001:5001"/>
+                        <HorizontalStackLayout Grid.Column="4"
+                                               Spacing="8">
+                            <ImageButton Source="play.png"
+                                         Style="{StaticResource ActionButtonStyle}">
+                                <ImageButton.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, x:DataType=viewmodels:MainViewModel, Path=StartContainerCommand}"
+                                        CommandParameter="{Binding .}"/>
+                                </ImageButton.GestureRecognizers>
+                            </ImageButton>
+                            <ImageButton Source="more.png"
+                                         Style="{StaticResource ActionButtonStyle}"/>
+                            <ImageButton Source="delete.png"
+                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=DeleteContainerCommand}"
+                                         CommandParameter="{Binding Id}"
+                                         Style="{StaticResource ActionButtonStyle}"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+    <!-- </VerticalStackLayout> -->
+</ContentPage>

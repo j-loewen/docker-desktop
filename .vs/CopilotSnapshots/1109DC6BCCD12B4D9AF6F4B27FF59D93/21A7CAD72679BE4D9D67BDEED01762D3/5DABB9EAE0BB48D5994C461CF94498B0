@@ -1,0 +1,32 @@
+﻿using Docker.DotNet.Models;
+
+namespace DockerDesktop.ViewModels;
+
+public partial class MainViewModel : BaseViewModel {
+
+    private readonly DockerService dockerService;
+
+    public ObservableCollection<ContainerListResponse> Container { get; } = new();
+
+
+    public MainViewModel(DockerService dockerService) {
+        Title = "Docker";
+
+        this.dockerService = dockerService;
+    }
+
+    [RelayCommand]
+    private async Task Connect() {
+        await this.dockerService.Connect();
+    }
+
+    [RelayCommand]
+    private async Task Refresh() {
+        this.IsBusy = true;
+        try {
+            await this.dockerService.LoadContainersAsync();
+        } finally {
+            this.IsBusy = false;
+        }
+    }
+}

@@ -1,0 +1,167 @@
+﻿using Docker.DotNet;
+using Docker.DotNet.Models;
+
+namespace DockerDesktop.Services;
+public class DockerService {
+
+    //https://github.com/dotnet/Docker.DotNet
+
+    private readonly SettingsService settingsService;
+    private Docker.DotNet.DockerClient? client;
+
+    public ObservableCollection<ContainerListResponse> Container { get; } = new();
+    public ObservableCollection<ImagesListResponse> Images { get; } = new();
+    public ObservableCollection<NetworkResponse> Networks { get; } = new();
+    public ObservableCollection<VolumesListResponse> Volumes { get; } = new();
+    public SystemInfoResponse SystemInfo { get; set; } = new();
+
+    public DockerService(SettingsService settingsService) {
+        this.settingsService = settingsService;
+    }
+
+    public async Task Connect() {
+        this.client = new DockerClientConfiguration(new Uri(this.settingsService.Settings.Host)).CreateClient();
+
+        this.SystemInfo = await client.System.GetSystemInfoAsync();
+
+        await this.LoadContainersAsync();
+        await this.LoadImagesAsync();
+        await this.LoadNetworksAsync();
+        await this.LoadVolumesAsync();
+    }
+
+    public async Task LoadContainersAsync() {
+        if (this.client == null) {
+            throw new InvalidOperationException("Docker client is not connected. Call Connect() first.");
+        }
+
+        IList<ContainerListResponse> containers = await this.client.Containers.ListContainersAsync(new ContainersListParameters() {
+            All = true
+        });
+
+        foreach (var container in containers) {
+            Boolean found = false;
+
+            for (int i = 0; i < this.Container.Count; i++) {
+                if (this.Container[i].ID == container.ID) {
+                    this.Container[i] = container;
+                    found = true;
+
+                    break;
+                }
+            }
+
+            if (!found) {
+                this.Container.Add(container);
+            }
+        }
+
+        foreach (var container in this.Container) {
+            Boolean found = false;
+
+            for (int i = 0; i < containers.Count; i++) {
+                if (containers[i].ID == container.ID) {
+                    found = true;
+
+                    break;
+                }
+            }
+
+            if (!found) {
+                this.Container.Remove(container);
+            }
+        }
+    }
+
+    public async Task LoadImagesAsync() {
+        if (this.client == null) {
+            throw new InvalidOperationException("Docker client is not connected. Call Connect() first.");
+        }
+
+        IList<ImagesListResponse> images = await this.client.Images.ListImagesAsync(new ImagesListParameters() {
+            All = true
+        });
+
+        foreach (var image in images) {
+            Boolean found = false;
+
+            for (int i = 0; i < this.Images.Count; i++) {
+                if (this.Images[i].ID == image.ID) {
+                    this.Images[i] = image;
+                    found = true;
+
+                    break;
+                }
+            }
+
+            if (!found) {
+                this.Images.Add(image);
+            }
+        }
+
+        foreach (var image in this.Images) {
+            Boolean found = false;
+
+            for (int i = 0; i < images.Count; i++) {
+                if (images[i].ID == image.ID) {
+                    found = true;
+
+                    break;
+                }
+            }
+
+            if (!found) {
+                this.Images.Remove(image);
+            }
+        }
+    }
+
+    public async Task LoadNetworksAsync() {
+        if (this.client == null) {
+            throw new InvalidOperationException("Docker client is not connected. Call Connect() first.");
+        }
+
+        IList<NetworkResponse> networks = await this.client.Networks.ListNetworksAsync(new NetworksListParameters() {});
+
+        foreach (var network in networks) {
+            Boolean found = false;
+
+            for (int i = 0; i < this.Networks.Count; i++) {
+                if (this.Networks[i].ID == network.ID) {
+                    this.Networks[i] = network;
+                    found = true;
+
+                    break;
+                }
+            }
+
+            if (!found) {
+                this.Networks.Add(network);
+            }
+        }
+
+        foreach (var network in this.Networks) {
+            Boolean found = false;
+
+            for (int i = 0; i < networks.Count; i++) {
+                if (networks[i].ID == network.ID) {
+                    found = true;
+
+                    break;
+                }
+            }
+
+            if (!found) {
+                this.Networks.Remove(network);
+            }
+        }
+    }
+
+    public async Task LoadVolumesAsync() {
+        if (this.client == null) {
+            throw new InvalidOperationException("Docker client is not connected. Call Connect() first.");
+        }
+
+        VolumesListResponse volumes = await this.client.Volumes.ListAsync(new VolumesListParameters() {});
+    }
+}

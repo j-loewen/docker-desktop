@@ -1,0 +1,94 @@
+﻿using Docker.DotNet.Models;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
+
+namespace DockerDesktop.ViewModels;
+
+public partial class MainViewModel : BaseViewModel {
+
+    private readonly DockerService dockerService;
+
+    [ObservableProperty]
+    private string searchText = string.Empty;
+
+    [ObservableProperty]
+    private bool showOnlyRunning;
+
+    public ObservableCollection<ContainerListResponse> FilteredContainers { get; } = new();
+
+    public string CpuUsageText => $"{dockerService.SystemInfo.NCPU * 100}% ({dockerService.SystemInfo.NCPU} cores allocated)";
+    public double CpuUsagePercent => 1.06 / 1000.0; // Example - implement actual calculation
+
+    public string MemoryUsageText => $"127.45 MB / {dockerService.SystemInfo.MemTotal / (1024*1024*1024):F1} GB";
+    public double MemoryUsagePercent => 127.45 / (15.1 * 1024); // Example - implement actual calculation
+
+    public MainViewModel(DockerService dockerService) {
+        Title = "Docker Desktop";
+
+        this.dockerService = dockerService;
+
+        this.dockerService.Container.CollectionChanged += (s, e) => UpdateFilteredContainers();
+    }
+
+    private void UpdateFilteredContainers() {
+        FilteredContainers.Clear();
+        var filtered = dockerService.Container
+            .Where(c => !ShowOnlyRunning || c.State == "running")
+            .Where(c => string.IsNullOrEmpty(SearchText) || 
+                       c.Names.Any(n => n.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
+                       c.Image.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+
+        foreach (var container in filtered) {
+            FilteredContainers.Add(container);
+        }
+    }
+
+    [RelayCommand]
+    private async Task Connect() {
+        await this.dockerService.Connect();
+    }
+
+    [RelayCommand]
+    private async Task Refresh() {
+        this.IsBusy = true;
+        try {
+            await this.dockerService.LoadContainersAsync();
+        } finally {
+            this.IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task StartContainer(string containerId) {
+        if (IsBusy) return;
+        IsBusy = true;
+
+        try {
+            // Implement start container
+            await Task.CompletedTask;
+        } finally {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteContainer(string containerId) {
+        if (IsBusy) return;
+        IsBusy = true;
+
+        try {
+            // Implement delete container
+            await Task.CompletedTask;
+        } finally {
+            IsBusy = false;
+        }
+    }
+
+    partial void OnSearchTextChanged(string value) {
+        UpdateFilteredContainers();
+    }
+
+    partial void OnShowOnlyRunningChanged(bool value) {
+        UpdateFilteredContainers();
+    }
+}

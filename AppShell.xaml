@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+        x:Class="DockerDesktop.AppShell"
+        xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        xmlns:viewmodels="clr-namespace:DockerDesktop.ViewModels"
+        xmlns:views="clr-namespace:DockerDesktop.Views"
+        xmlns:local="clr-namespace:DockerDesktop"
+        Shell.FlyoutBehavior="Flyout"
+        Title="DockerDesktop">
+
+        <Shell.Resources>
+                <ResourceDictionary>
+                        <Style TargetType="Shell"
+                               ApplyToDerivedTypes="True">
+                                <Setter Property="Shell.BackgroundColor"
+                                        Value="{StaticResource Primary}"/>
+                                <Setter Property="Shell.ForegroundColor"
+                                        Value="{OnPlatform WinUI={StaticResource Primary}, Default=White}"/>
+                                <Setter Property="Shell.TitleColor"
+                                        Value="White"/>
+                                <Setter Property="Shell.DisabledColor"
+                                        Value="#B4FFFFFF"/>
+                                <Setter Property="Shell.UnselectedColor"
+                                        Value="{AppThemeBinding Dark=#95FFFFFF, Light=#95000000}"/>
+                                <Setter Property="Shell.NavBarHasShadow"
+                                        Value="False"/>
+                                <Setter Property="Shell.TabBarBackgroundColor"
+                                        Value="{AppThemeBinding Dark={StaticResource Primary}, Light={StaticResource Secondary}}"/>
+                                <Setter Property="Shell.TabBarForegroundColor"
+                                        Value="{AppThemeBinding Dark={StaticResource Secondary}, Light={StaticResource Primary}}"/>
+                                <Setter Property="Shell.TabBarTitleColor"
+                                        Value="{AppThemeBinding Dark={StaticResource Secondary}, Light={StaticResource Primary}}"/>
+                                <Setter Property="Shell.TabBarUnselectedColor"
+                                        Value="{AppThemeBinding Dark=#95FFFFFF, Light=#95000000}"/>
+                        </Style>
+                </ResourceDictionary>
+        </Shell.Resources>
+
+        <FlyoutItem Title="Home">
+                <FlyoutItem.Icon>
+                        <FontImageSource Glyph="&#xf2dc;"
+                                         FontFamily="MaterialDesignIcons"
+                                         Size="24"
+                                         Color="Black"/>
+                </FlyoutItem.Icon>
+                <ShellContent
+                        Shell.NavBarIsVisible="true"
+                        ContentTemplate="{DataTemplate views:MainPage}"
+                        Route="MainPage"/>
+        </FlyoutItem>
+
+        <FlyoutItem Title="Settings">
+                <FlyoutItem.Icon>
+                        <FontImageSource Glyph="&#xf493;"
+                                         FontFamily="MaterialDesignIcons"
+                                         Size="24"
+                                         Color="Black"/>
+                </FlyoutItem.Icon>
+                <ShellContent ContentTemplate="{DataTemplate views:SettingsPage}"/>
+        </FlyoutItem>
+
+
+        <Shell.FlyoutFooter>
+                <VerticalStackLayout Padding="10">
+                        <Label Text="Copyright © 2025"
+                               HorizontalOptions="Center"
+                               Margin="10"/>
+                </VerticalStackLayout>
+        </Shell.FlyoutFooter>
+
+</Shell>

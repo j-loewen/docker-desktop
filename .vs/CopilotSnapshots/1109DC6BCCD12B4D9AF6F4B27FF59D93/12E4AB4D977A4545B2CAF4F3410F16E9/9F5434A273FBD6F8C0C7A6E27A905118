@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DockerDesktop.Views.MainPage"
+             xmlns:viewmodels="clr-namespace:DockerDesktop.ViewModels"
+             x:DataType="viewmodels:MainViewModel"
+             BackgroundColor="{StaticResource BackgroundGray}">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Grid Style="{StaticResource DockerHeaderStyle}"
+              ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+            
+            <Label Text="Docker Desktop"
+                   TextColor="White"
+                   FontSize="16"
+                   VerticalOptions="Center"
+                   Margin="0,0,16,0"/>
+
+            <SearchBar Grid.Column="1"
+                      Style="{StaticResource SearchBoxStyle}"
+                      Placeholder="Search for local and remote images, containers, and more..."
+                      Margin="0,0,16,0"/>
+
+            <Button Grid.Column="2"
+                    Text="⚡K"
+                    TextColor="White"
+                    BackgroundColor="Transparent"
+                    Margin="0,0,16,0"/>
+
+            <Button Grid.Column="3"
+                    Text="⚙️"
+                    TextColor="White"
+                    BackgroundColor="Transparent"
+                    Margin="0,0,16,0"/>
+
+            <Button Grid.Column="4"
+                    Text="👤"
+                    TextColor="White"
+                    BackgroundColor="Transparent"/>
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="240,*">
+            <!-- Left Navigation -->
+            <VerticalStackLayout BackgroundColor="White"
+                               Padding="16">
+                <Label Text="Containers"
+                       FontAttributes="Bold"
+                       Margin="0,0,0,16"/>
+                <Label Text="Images"
+                       TextColor="{StaticResource TextSecondary}"
+                       Margin="0,0,0,16"/>
+                <Label Text="Volumes"
+                       TextColor="{StaticResource TextSecondary}"
+                       Margin="0,0,0,16"/>
+                <Label Text="Dev Environments"
+                       TextColor="{StaticResource TextSecondary}"
+                       Margin="0,0,0,16"/>
+            </VerticalStackLayout>
+
+            <!-- Main Content -->
+            <VerticalStackLayout Grid.Column="1" 
+                               Padding="24">
+                <Grid ColumnDefinitions="*,Auto" 
+                      Margin="0,0,0,24">
+                    <Label Text="Containers"
+                           FontSize="24"
+                           FontAttributes="Bold"/>
+                    <Button Grid.Column="1"
+                            Text="Give feedback"
+                            TextColor="{StaticResource LinkBlue}"
+                            BackgroundColor="Transparent"/>
+                </Grid>
+
+                <!-- Resource Usage -->
+                <Border Stroke="{StaticResource BorderGray}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 4"
+                        BackgroundColor="White"
+                        Padding="16"
+                        Margin="0,0,0,24">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="16">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout>
+                                <Label Text="Container CPU usage"
+                                       Style="{StaticResource MetricLabelStyle}"/>
+                                <Grid ColumnDefinitions="*,Auto" Margin="0,8">
+                                    <ProgressBar Progress="0.0106"
+                                               BackgroundColor="#E0E0E0"
+                                               ProgressColor="{StaticResource StatusGreen}"/>
+                                    <Label Grid.Column="1"
+                                           Text="1.06% / 1000% (10 cores allocated)"
+                                           Style="{StaticResource MetricValueStyle}"/>
+                                </Grid>
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1"
+                                    Text="Show charts ▼"
+                                    TextColor="{StaticResource LinkBlue}"
+                                    BackgroundColor="Transparent"/>
+                        </Grid>
+
+                        <VerticalStackLayout Grid.Row="1">
+                            <Label Text="Container memory usage"
+                                   Style="{StaticResource MetricLabelStyle}"/>
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,8">
+                                <ProgressBar Progress="0.008"
+                                           BackgroundColor="#E0E0E0"
+                                           ProgressColor="{StaticResource StatusGreen}"/>
+                                <Label Grid.Column="1"
+                                       Text="127.45 MB / 15.1 GB"
+                                       Style="{StaticResource MetricValueStyle}"/>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- Container List -->
+                <CollectionView ItemsSource="{Binding Containers}"
+                              Style="{StaticResource ContainerListStyle}">
+                    <CollectionView.Header>
+                        <Grid ColumnDefinitions="30,2*,2*,*,*,*,*"
+                              Padding="16"
+                              BackgroundColor="White">
+                            <CheckBox/>
+                            <Label Grid.Column="1" Text="NAME" Style="{StaticResource MetricLabelStyle}"/>
+                            <Label Grid.Column="2" Text="IMAGE" Style="{StaticResource MetricLabelStyle}"/>
+                            <Label Grid.Column="3" Text="STATUS" Style="{StaticResource MetricLabelStyle}"/>
+                            <Label Grid.Column="4" Text="CPU (%)" Style="{StaticResource MetricLabelStyle}"/>
+                            <Label Grid.Column="5" Text="PORTS" Style="{StaticResource MetricLabelStyle}"/>
+                            <Label Grid.Column="6" Text="ACTIONS" Style="{StaticResource MetricLabelStyle}"/>
+                        </Grid>
+                    </CollectionView.Header>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="30,2*,2*,*,*,*,*"
+                                  Padding="16"
+                                  BackgroundColor="White">
+                                <CheckBox/>
+                                <VerticalStackLayout Grid.Column="1">
+                                    <Label Text="{Binding Name}"
+                                           TextColor="{StaticResource LinkBlue}"/>
+                                    <Label Text="{Binding Id}"
+                                           Style="{StaticResource MetricLabelStyle}"
+                                           FontSize="11"/>
+                                </VerticalStackLayout>
+                                <Label Grid.Column="2"
+                                       Text="{Binding Image}"
+                                       TextColor="{StaticResource LinkBlue}"/>
+                                <HorizontalStackLayout Grid.Column="3">
+                                    <Ellipse Fill="{StaticResource StatusGreen}"
+                                            WidthRequest="8"
+                                            HeightRequest="8"
+                                            VerticalOptions="Center"
+                                            Margin="0,0,8,0"/>
+                                    <Label Text="{Binding Status}"
+                                           TextColor="{StaticResource StatusGreen}"/>
+                                </HorizontalStackLayout>
+                                <Label Grid.Column="4"
+                                       Text="{Binding CpuUsage}"/>
+                                <Label Grid.Column="5"
+                                       Text="{Binding Ports}"/>
+                                <HorizontalStackLayout Grid.Column="6" Spacing="8">
+                                    <Button Text="▶"
+                                            WidthRequest="32"
+                                            HeightRequest="32"/>
+                                    <Button Text="⋮"
+                                            WidthRequest="32"
+                                            HeightRequest="32"/>
+                                    <Button Text="🗑"
+                                            WidthRequest="32"
+                                            HeightRequest="32"/>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>
