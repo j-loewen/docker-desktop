@@ -13,7 +13,7 @@ public partial class ContainerModel : ObservableObject
     public ContainerModel(ContainerListResponse container)
     {
         this.Id = container.ID;
-        this.Name = container.Names.FirstOrDefault() ?? string.Empty;
+        this.Name = (container.Names.FirstOrDefault() ?? string.Empty).TrimStart('/');
         this.State = container.State;
         this.Created = container.Created;
         this.Command = container.Command;

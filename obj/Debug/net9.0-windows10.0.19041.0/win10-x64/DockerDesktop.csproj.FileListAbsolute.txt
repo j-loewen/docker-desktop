@@ -518,3 +518,4 @@ D:\Development\Apps\DockerDesktop\obj\Debug\net9.0-windows10.0.19041.0\win10-x64
 D:\Development\Apps\DockerDesktop\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt
 D:\Development\Apps\DockerDesktop\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt.intermediate
 D:\Development\Apps\DockerDesktop\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\MultipleQualifiersPerDimensionFound.txt
+D:\Development\Apps\DockerDesktop\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\DockerDesktop.sourcelink.json

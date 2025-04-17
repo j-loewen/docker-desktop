@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DockerDesktop.Views.MainPage"
@@ -7,18 +7,15 @@
              x:DataType="viewmodels:MainViewModel"
              Title="Containers">
 
-
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Connect"
                      Command="{Binding ConnectCommand}"/>
     </ContentPage.ToolbarItems>
 
-    <!-- <VerticalStackLayout> -->
     <Grid RowDefinitions="Auto,Auto,*,28"
-          Padding="20"
-          RowSpacing="24"
           ColumnDefinitions="*">
         <Grid Grid.Row="0"
+              Margin="24"
               ColumnDefinitions="*,*"
               ColumnSpacing="24">
             <!-- CPU Usage -->
@@ -71,7 +68,8 @@
         <!-- Search and Filter -->
         <Grid Grid.Row="1"
               ColumnDefinitions="*,Auto"
-              Margin="0,24">
+              Margin="24"
+              ColumnSpacing="24">
             <SearchBar Placeholder="Search"
                        Text="{Binding SearchText}"
                        Style="{StaticResource SearchBarStyle}"/>
@@ -91,8 +89,9 @@
         <!-- Container List -->
         <!-- ItemsSource="{Binding FilteredContainers}" -->
         <CollectionView Grid.Row="2"
-                        BackgroundColor="Aqua"
-                        ItemSizingStrategy="MeasureAllItems">
+                        ItemSizingStrategy="MeasureAllItems"
+                        ItemsSource="{Binding FilteredContainers}"
+                        Margin="24">
             <CollectionView.Header>
                 <Grid ColumnDefinitions="2*,2*,*,*,*"
                       Style="{StaticResource ListHeaderStyle}">
@@ -108,7 +107,7 @@
                            Text="Actions"/>
                 </Grid>
             </CollectionView.Header>
-            <CollectionView.ItemsSource>
+            <!-- <CollectionView.ItemsSource>
                 <x:Array Type="{x:Type models:ContainerModel}">
                     <models:ContainerModel Id="1"
                                            Name="Container 1"
@@ -120,11 +119,13 @@
                                            Name="Container 3"
                                            State="Paused"/>
                 </x:Array>
-            </CollectionView.ItemsSource>
+            </CollectionView.ItemsSource> -->
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:ContainerModel">
                     <Grid
+                        Margin="0,0,0,5"
+                        BackgroundColor="Teal"
                         ColumnDefinitions="2*,2*,*,*,*"
                         HorizontalOptions="Fill"
                         Style="{StaticResource ListItemStyle}">
@@ -136,7 +137,7 @@
                             Grid.Column="1"
                             Text="{Binding Image.Name}"/>
                         <HorizontalStackLayout Grid.Column="2">
-                            <Ellipse Fill="{Binding State, Converter={StaticResource StatusColorConverter}}"/>
+                            <!-- <Ellipse Fill="{Binding State, Converter={StaticResource StatusColorConverter}}"/> -->
                             <Label Text="{Binding State}"/>
                         </HorizontalStackLayout>
                         <Label
@@ -144,25 +145,49 @@
                             Text="5001:5001"/>
                         <HorizontalStackLayout Grid.Column="4"
                                                Spacing="8">
-                            <ImageButton Source="play.png"
-                                         Style="{StaticResource ActionButtonStyle}">
+                            <ImageButton>
+                                <ImageButton.Source>
+                                    <FontImageSource Glyph="&#xf40a;"
+                                                     FontFamily="MaterialDesignIcons"
+                                                     Size="24"
+                                                     Color="Black"/>
+                                </ImageButton.Source>
                                 <ImageButton.GestureRecognizers>
                                     <TapGestureRecognizer
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, x:DataType=viewmodels:MainViewModel, Path=StartContainerCommand}"
                                         CommandParameter="{Binding .}"/>
                                 </ImageButton.GestureRecognizers>
                             </ImageButton>
-                            <ImageButton Source="more.png"
-                                         Style="{StaticResource ActionButtonStyle}"/>
-                            <ImageButton Source="delete.png"
-                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=DeleteContainerCommand}"
-                                         CommandParameter="{Binding Id}"
-                                         Style="{StaticResource ActionButtonStyle}"/>
+                            <ImageButton>
+                                <ImageButton.Source>
+                                    <FontImageSource Glyph="&#xf1d9;"
+                                                     FontFamily="MaterialDesignIcons"
+                                                     Size="24"
+                                                     Color="Black"/>
+                                </ImageButton.Source>
+                            </ImageButton>
+                            <ImageButton Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=DeleteContainerCommand}"
+                                         CommandParameter="{Binding Id}">
+                                <ImageButton.Source>
+                                    <FontImageSource Glyph="&#xf1c0;"
+                                                     FontFamily="MaterialDesignIcons"
+                                                     Size="24"
+                                                     Color="Black"/>
+                                </ImageButton.Source>
+                            </ImageButton>
+                            <!-- Style="{StaticResource ActionButtonStyle}" -->
                         </HorizontalStackLayout>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
+        <Grid
+            Grid.Row="3"
+            BackgroundColor="Aqua">
+            <Label Text="Docker Desktop for Windows"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"/>
+        </Grid>
     </Grid>
-    <!-- </VerticalStackLayout> -->
 </ContentPage>
