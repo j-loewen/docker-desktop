@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using CommunityToolkit.Maui;
+using Microsoft.Maui.Foldable;
 
 namespace DockerDesktop
 {
@@ -6,9 +8,10 @@ namespace DockerDesktop
     {
         public static MauiApp CreateMauiApp()
         {
-            var builder = MauiApp.CreateBuilder();
-            builder
-                .UseMauiApp<App>()
+            var builder = MauiApp.CreateBuilder()
+                            .UseMauiCommunityToolkit()
+                            .UseFoldable()
+                            .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -29,11 +32,11 @@ namespace DockerDesktop
             builder.Services.AddSingleton<DockerService>();
 
             //ViewModels
-            builder.Services.AddSingleton<MainViewModel>();
-            builder.Services.AddSingleton<SettingsViewModel>();
+            builder.Services.AddSingleton<ContainerPage, ContainerViewModel>();
+            //builder.Services.AddSingleton<SettingsViewModel>();
 
             //Pages
-            builder.Services.AddSingleton<SettingsPage>();
+            builder.Services.AddSingleton<SettingsPage, SettingsViewModel>();
 
             return builder.Build();
         }

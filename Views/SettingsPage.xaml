@@ -6,16 +6,15 @@
              xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
              ios:Page.UseSafeArea="True"
              x:DataType="viewmodels:SettingsViewModel"
-             Shell.FlyoutBehavior="Flyout"
              Title="{Binding Title}">
 
-    <StackLayout Padding="10">
-        <Label Text="Settings"
-               FontSize="24"
-               HorizontalOptions="Center"/>
-        <Entry Placeholder="Host"
-               Text="{Binding Settings.Host, Mode=TwoWay}"/>
-        <Button Text="Save"
-                Command="{Binding SaveCommand}"/>
-    </StackLayout>
+       <StackLayout Padding="10">
+              <Label Text="Settings"
+                     FontSize="24"
+                     HorizontalOptions="Center"/>
+              <Entry Placeholder="Host"
+                     Text="{Binding Settings.Host, Mode=TwoWay}"/>
+              <Button Text="Save"
+                      Command="{Binding SaveCommand}"/>
+       </StackLayout>
 </ContentPage>

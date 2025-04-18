@@ -13,6 +13,8 @@ public class DockerService : IDisposable
     private readonly Dictionary<string, CancellationTokenSource> containerStatsCancellationTokens = new();
     private bool disposed;
 
+    public event EventHandler<bool>? ConnectionStateChanged;
+
     public ObservableCollection<ContainerListResponse> Container { get; } = new();
     public ObservableCollection<ImagesListResponse> Images { get; } = new();
     public ObservableCollection<NetworkResponse> Networks { get; } = new();
@@ -24,16 +26,24 @@ public class DockerService : IDisposable
         this.settingsService = settingsService;
     }
 
+    private void UpdateConnectionState(bool connected)
+    {
+        ConnectionStateChanged?.Invoke(this, connected);
+    }
+
     public async Task Connect()
     {
-        this.client = new DockerClientConfiguration(new Uri(this.settingsService.Settings.Host)).CreateClient();
-
-        //this.SystemInfo = await client.System.GetSystemInfoAsync();
-
-        await this.LoadContainersAsync();
-        //await this.LoadImagesAsync();
-        //await this.LoadNetworksAsync();
-        //await this.LoadVolumesAsync();
+        try
+        {
+            this.client = new DockerClientConfiguration(new Uri(this.settingsService.Settings.Host)).CreateClient();
+            await this.LoadContainersAsync();
+            UpdateConnectionState(true);
+        }
+        catch
+        {
+            UpdateConnectionState(false);
+            throw;
+        }
     }
 
     public async Task LoadContainersAsync()
@@ -257,6 +267,7 @@ public class DockerService : IDisposable
                 containerStatsCancellationTokens.Clear();
 
                 client?.Dispose();
+                UpdateConnectionState(false);
             }
             disposed = true;
         }

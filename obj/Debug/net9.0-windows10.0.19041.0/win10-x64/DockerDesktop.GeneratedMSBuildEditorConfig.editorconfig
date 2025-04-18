@@ -51,11 +51,11 @@ build_metadata.AdditionalFiles.ManifestResourceName = DockerDesktop.Resources.St
 build_metadata.AdditionalFiles.TargetPath = Resources\Styles\Styles.xaml
 build_metadata.AdditionalFiles.RelativePath = Resources\Styles\Styles.xaml
 
-[D:/Development/Apps/DockerDesktop/Views/MainPage.xaml]
+[D:/Development/Apps/DockerDesktop/Views/ContainerPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
-build_metadata.AdditionalFiles.ManifestResourceName = DockerDesktop.Views.MainPage.xaml
-build_metadata.AdditionalFiles.TargetPath = Views\MainPage.xaml
-build_metadata.AdditionalFiles.RelativePath = Views\MainPage.xaml
+build_metadata.AdditionalFiles.ManifestResourceName = DockerDesktop.Views.ContainerPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\ContainerPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\ContainerPage.xaml
 
 [D:/Development/Apps/DockerDesktop/Views/SettingsPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml

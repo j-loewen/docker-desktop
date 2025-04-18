@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DockerDesktop.Views.ContainerPage"
+             xmlns:viewmodels="clr-namespace:DockerDesktop.ViewModels"
+             xmlns:models="clr-namespace:DockerDesktop.Models"
+             xmlns:collections="clr-namespace:CommunityToolkit.Mvvm.Collections;assembly=CommunityToolkit.Mvvm"
+             xmlns:foldable="clr-namespace:Microsoft.Maui.Controls.Foldable;assembly=Microsoft.Maui.Controls.Foldable"
+             x:DataType="viewmodels:ContainerViewModel"
+             Title="Containers">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Connect"
+                     IconImageSource="refresh.png"
+                     Command="{Binding ConnectCommand}"/>
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="*,28"
+          ColumnDefinitions="*">
+
+        <foldable:TwoPaneView x:Name="twoPaneView"
+                              BackgroundColor="{StaticResource BackgroundGray}"
+                              MinWideModeWidth="500"
+                              MinTallModeHeight="500"
+                              Pane1Length="300"
+                              Pane2Length="*"
+                              PanePriority="Pane1">
+            <foldable:TwoPaneView.Pane1>
+                <Grid
+                    RowDefinitions="Auto,*"
+                    Margin="0"
+                    ColumnSpacing="0"
+                    BackgroundColor="Transparent">
+
+                    <SearchBar Grid.Row="0"
+                               Margin="3"
+                               Placeholder="Search"
+                               Text="{Binding SearchText}"
+                               Style="{StaticResource SearchBarStyle}"/>
+
+                    <CollectionView Grid.Row="1"
+                                    ItemSizingStrategy="MeasureAllItems"
+                                    ItemsSource="{Binding FilteredContainers}"
+                                    IsGrouped="True"
+                                    Margin="3"
+                                    SelectionMode="Single"
+                                    SelectedItem="{Binding SelectedContainer}"
+                                    SelectionChangedCommand="{Binding ContainerSelectedCommand}"
+                                    SelectionChangedCommandParameter="{Binding .}"
+                                    BackgroundColor="White">
+
+                        <CollectionView.GroupHeaderTemplate>
+                            <DataTemplate x:DataType="collections:IReadOnlyObservableGroup">
+                                <VerticalStackLayout BackgroundColor="{StaticResource BackgroundGray}"
+                                                     HorizontalOptions="Fill">
+                                    <Label Text="{Binding Key}"
+                                           Padding="10,5,5,5"
+                                           HorizontalOptions="Start"
+                                           VerticalOptions="Start"/>
+                                    <BoxView
+                                        Color="{StaticResource BorderGray}"
+                                        HeightRequest="1"
+                                        Margin="0,0,0,0"
+                                        HorizontalOptions="Fill"/>
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.GroupHeaderTemplate>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:ContainerModel">
+                                <VerticalStackLayout>
+                                    <Grid
+                                        RowDefinitions="Auto,Auto"
+                                        Margin="0,0,0,3"
+                                        Padding="30,10,10,10"
+                                        HorizontalOptions="Fill">
+
+                                        <Label Grid.Row="0"
+                                               Text="{Binding Name, StringFormat='{0}'}"/>
+                                        <Label Grid.Row="1"
+                                               Text="{Binding Image.Name, StringFormat='{0}'}"
+                                               TextColor="{StaticResource TextSecondary}"/>
+                                    </Grid>
+                                    <BoxView
+                                        Color="{StaticResource BorderGray}"
+                                        HeightRequest="1"
+                                        Margin="7,0,12,0"
+                                        HorizontalOptions="Fill"/>
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </foldable:TwoPaneView.Pane1>
+            <foldable:TwoPaneView.Pane2>
+                <Grid
+                    Margin="0"
+                    RowDefinitions="Auto,*"
+                    ColumnSpacing="0">
+
+                    <Label
+                        Text="{Binding SelectedContainer.Name}"
+                        HorizontalOptions="Start"
+                        VerticalOptions="Center"/>
+                </Grid>
+            </foldable:TwoPaneView.Pane2>
+        </foldable:TwoPaneView>
+
+
+        <!--<Grid Grid.Row="0"
+              Grid.Column="0"
+              RowDefinitions="Auto,*"
+              Margin="0"
+              ColumnSpacing="0"
+              BackgroundColor="Transparent">
+
+            <SearchBar Grid.Row="0"
+                       Margin="3"
+                       Placeholder="Search"
+                       Text="{Binding SearchText}"
+                       Style="{StaticResource SearchBarStyle}"/>
+
+            <CollectionView Grid.Row="1"
+                            ItemSizingStrategy="MeasureAllItems"
+                            ItemsSource="{Binding FilteredContainers}"
+                            IsGrouped="True"
+                            Margin="3"
+                            SelectionMode="Single"
+                            SelectedItem="{Binding SelectedContainer}"
+                            SelectionChangedCommand="{Binding ContainerSelectedCommand}"
+                            SelectionChangedCommandParameter="{Binding .}"
+                            BackgroundColor="White">
+
+                <CollectionView.GroupHeaderTemplate>
+                    <DataTemplate x:DataType="collections:IReadOnlyObservableGroup">
+                        <VerticalStackLayout BackgroundColor="{StaticResource BackgroundGray}" HorizontalOptions="Fill">
+                            <Label Text="{Binding Key}"
+                                   Padding="10,5,5,5"
+                               HorizontalOptions="Start"
+                               VerticalOptions="Start"/>
+                            <BoxView
+                                Color="{StaticResource BorderGray}"
+                                HeightRequest="1"
+                                Margin="0,0,0,0"
+                                HorizontalOptions="Fill"/>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.GroupHeaderTemplate>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ContainerModel">
+                        <VerticalStackLayout>
+                            <Grid
+                                RowDefinitions="Auto,Auto"
+                                Margin="0,0,0,3"
+                                Padding="30,10,10,10"
+                                HorizontalOptions="Fill">
+
+                                <Label Grid.Row="0"
+                                       Text="{Binding Name, StringFormat='{0}'}"/>
+                                <Label Grid.Row="1"
+                                       Text="{Binding Image.Name, StringFormat='{0}'}"
+                                       TextColor="{StaticResource TextSecondary}"/>
+                            </Grid>
+                            <BoxView
+                                Color="{StaticResource BorderGray}"
+                                HeightRequest="1"
+                                Margin="7,0,12,0"
+                                HorizontalOptions="Fill"/>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>-->
+
+        <!--<Grid Grid.Row="0"
+              Grid.Column="1"
+              Margin="0"
+              RowDefinitions="Auto,*"
+              ColumnSpacing="0">
+
+            <Label
+                Text="{Binding SelectedContainer.Name}"
+                HorizontalOptions="Start"
+                VerticalOptions="Center"/>
+        </Grid>-->
+
+        <Grid
+            Grid.Row="1"
+            Padding="10,0"
+            ColumnDefinitions="Auto,Auto,Auto,Auto"
+            BackgroundColor="{StaticResource Gray200}">
+
+            <HorizontalStackLayout Grid.Column="0"
+                                   Spacing="5">
+                <Image HeightRequest="22"
+                       Source="lan.png"/>
+                <Label
+                    Text="{Binding ServiceState}"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"/>
+            </HorizontalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -11,3 +11,4 @@ global using System.Runtime.CompilerServices;
 global using System.Text.Json;
 global using System;
 global using Microsoft.Maui.Controls;
+global using CommunityToolkit.Mvvm.Collections;

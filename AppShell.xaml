@@ -6,8 +6,8 @@
         xmlns:viewmodels="clr-namespace:DockerDesktop.ViewModels"
         xmlns:views="clr-namespace:DockerDesktop.Views"
         xmlns:local="clr-namespace:DockerDesktop"
-        Shell.FlyoutBehavior="Flyout"
-        Title="DockerDesktop">
+        FlyoutBehavior="Disabled"
+        Title="Docker Desktop">
 
         <Shell.Resources>
                 <ResourceDictionary>
@@ -37,36 +37,24 @@
                 </ResourceDictionary>
         </Shell.Resources>
 
-        <FlyoutItem Title="Home">
-                <FlyoutItem.Icon>
-                        <FontImageSource Glyph="&#xf2dc;"
-                                         FontFamily="MaterialDesignIcons"
-                                         Size="24"
-                                         Color="Black"/>
-                </FlyoutItem.Icon>
+        <FlyoutItem Title="Home"
+                    Icon="home.png">
                 <ShellContent
+                        Title="Container"
+                        Icon="home.png"
                         Shell.NavBarIsVisible="true"
-                        ContentTemplate="{DataTemplate views:MainPage}"
-                        Route="MainPage"/>
+                        ContentTemplate="{DataTemplate views:ContainerPage}"
+                        Route="ContainerPage"/>
+
+                <!-- <ShellContent
+                                Title="Images"
+                                Icon="home.png"
+                                Shell.NavBarIsVisible="true"
+                                ContentTemplate="{DataTemplate views:ContainerPage}"
+                                Route="ContainerPage"/> -->
+
+                <ShellContent Icon="settings.png"
+                              ContentTemplate="{DataTemplate views:SettingsPage}"/>
+
         </FlyoutItem>
-
-        <FlyoutItem Title="Settings">
-                <FlyoutItem.Icon>
-                        <FontImageSource Glyph="&#xf493;"
-                                         FontFamily="MaterialDesignIcons"
-                                         Size="24"
-                                         Color="Black"/>
-                </FlyoutItem.Icon>
-                <ShellContent ContentTemplate="{DataTemplate views:SettingsPage}"/>
-        </FlyoutItem>
-
-
-        <Shell.FlyoutFooter>
-                <VerticalStackLayout Padding="10">
-                        <Label Text="Copyright © 2025"
-                               HorizontalOptions="Center"
-                               Margin="10"/>
-                </VerticalStackLayout>
-        </Shell.FlyoutFooter>
-
 </Shell>

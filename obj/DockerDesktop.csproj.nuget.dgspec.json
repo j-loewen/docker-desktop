@@ -68,6 +68,14 @@
         "net9.0-android35.0": {
           "targetAlias": "net9.0-android",
           "dependencies": {
+            "CommunityToolkit.Maui": {
+              "target": "Package",
+              "version": "[11.2.0, )"
+            },
+            "CommunityToolkit.Maui.Core": {
+              "target": "Package",
+              "version": "[11.2.0, )"
+            },
             "CommunityToolkit.Mvvm": {
               "target": "Package",
               "version": "[8.4.0, )"
@@ -82,12 +90,16 @@
             },
             "Microsoft.Maui.Controls": {
               "target": "Package",
-              "version": "[9.0.14, )"
+              "version": "[9.0.60, )"
+            },
+            "Microsoft.Maui.Controls.Foldable": {
+              "target": "Package",
+              "version": "[9.0.60, )"
             },
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[9.0.3, )",
+              "version": "[9.0.4, )",
               "autoReferenced": true
             },
             "SSH.NET": {
@@ -114,11 +126,19 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
         },
         "net9.0-ios18.2": {
           "targetAlias": "net9.0-ios",
           "dependencies": {
+            "CommunityToolkit.Maui": {
+              "target": "Package",
+              "version": "[11.2.0, )"
+            },
+            "CommunityToolkit.Maui.Core": {
+              "target": "Package",
+              "version": "[11.2.0, )"
+            },
             "CommunityToolkit.Mvvm": {
               "target": "Package",
               "version": "[8.4.0, )"
@@ -133,12 +153,16 @@
             },
             "Microsoft.Maui.Controls": {
               "target": "Package",
-              "version": "[9.0.14, )"
+              "version": "[9.0.60, )"
+            },
+            "Microsoft.Maui.Controls.Foldable": {
+              "target": "Package",
+              "version": "[9.0.60, )"
             },
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[9.0.3, )",
+              "version": "[9.0.4, )",
               "autoReferenced": true
             },
             "SSH.NET": {
@@ -165,11 +189,19 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
         },
         "net9.0-maccatalyst18.2": {
           "targetAlias": "net9.0-maccatalyst",
           "dependencies": {
+            "CommunityToolkit.Maui": {
+              "target": "Package",
+              "version": "[11.2.0, )"
+            },
+            "CommunityToolkit.Maui.Core": {
+              "target": "Package",
+              "version": "[11.2.0, )"
+            },
             "CommunityToolkit.Mvvm": {
               "target": "Package",
               "version": "[8.4.0, )"
@@ -184,12 +216,16 @@
             },
             "Microsoft.Maui.Controls": {
               "target": "Package",
-              "version": "[9.0.14, )"
+              "version": "[9.0.60, )"
+            },
+            "Microsoft.Maui.Controls.Foldable": {
+              "target": "Package",
+              "version": "[9.0.60, )"
             },
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[9.0.3, )",
+              "version": "[9.0.4, )",
               "autoReferenced": true
             },
             "SSH.NET": {
@@ -217,11 +253,19 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
         },
         "net9.0-windows10.0.19041": {
           "targetAlias": "net9.0-windows10.0.19041.0",
           "dependencies": {
+            "CommunityToolkit.Maui": {
+              "target": "Package",
+              "version": "[11.2.0, )"
+            },
+            "CommunityToolkit.Maui.Core": {
+              "target": "Package",
+              "version": "[11.2.0, )"
+            },
             "CommunityToolkit.Mvvm": {
               "target": "Package",
               "version": "[8.4.0, )"
@@ -236,7 +280,11 @@
             },
             "Microsoft.Maui.Controls": {
               "target": "Package",
-              "version": "[9.0.14, )"
+              "version": "[9.0.60, )"
+            },
+            "Microsoft.Maui.Controls.Foldable": {
+              "target": "Package",
+              "version": "[9.0.60, )"
             },
             "SSH.NET": {
               "target": "Package",
@@ -268,7 +316,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203\\RuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {
