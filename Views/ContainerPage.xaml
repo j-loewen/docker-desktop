@@ -1,205 +1,275 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="DockerDesktop.Views.ContainerPage"
-             xmlns:viewmodels="clr-namespace:DockerDesktop.ViewModels"
-             xmlns:models="clr-namespace:DockerDesktop.Models"
-             xmlns:collections="clr-namespace:CommunityToolkit.Mvvm.Collections;assembly=CommunityToolkit.Mvvm"
-             xmlns:foldable="clr-namespace:Microsoft.Maui.Controls.Foldable;assembly=Microsoft.Maui.Controls.Foldable"
-             x:DataType="viewmodels:ContainerViewModel"
-             Title="Containers">
+<ContentPage
+    x:Class="DockerDesktop.Views.ContainerPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:collections="clr-namespace:CommunityToolkit.Mvvm.Collections;assembly=CommunityToolkit.Mvvm"
+    xmlns:models="clr-namespace:DockerDesktop.Models"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:viewmodels="clr-namespace:DockerDesktop.ViewModels"
+    x:Name="ContainerContentPage"
+    Title="{Binding Title}"
+    x:DataType="viewmodels:ContainerViewModel"
+    SizeChanged="ContentPage_SizeChanged">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:IsNullConverter x:Key="IsNullConverter" />
+            <toolkit:IsNotNullConverter x:Key="IsNotNullConverter" />
+            <toolkit:TextCaseConverter x:Key="TextToPascalCaseConverter" Type="FirstUpperRestLower" />
+            <toolkit:IsEqualConverter x:Key="IsEqualConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Connect"
-                     IconImageSource="refresh.png"
-                     Command="{Binding ConnectCommand}"/>
+        <ToolbarItem Command="{Binding ConnectCommand}" Text="Connect">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="faLight" Glyph="&#xf021;" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
     </ContentPage.ToolbarItems>
 
-    <Grid RowDefinitions="*,28"
-          ColumnDefinitions="*">
-
-        <foldable:TwoPaneView x:Name="twoPaneView"
-                              BackgroundColor="{StaticResource BackgroundGray}"
-                              MinWideModeWidth="500"
-                              MinTallModeHeight="500"
-                              Pane1Length="300"
-                              Pane2Length="*"
-                              PanePriority="Pane1">
-            <foldable:TwoPaneView.Pane1>
-                <Grid
-                    RowDefinitions="Auto,*"
-                    Margin="0"
-                    ColumnSpacing="0"
-                    BackgroundColor="Transparent">
-
-                    <SearchBar Grid.Row="0"
-                               Margin="3"
-                               Placeholder="Search"
-                               Text="{Binding SearchText}"
-                               Style="{StaticResource SearchBarStyle}"/>
-
-                    <CollectionView Grid.Row="1"
-                                    ItemSizingStrategy="MeasureAllItems"
-                                    ItemsSource="{Binding FilteredContainers}"
-                                    IsGrouped="True"
-                                    Margin="3"
-                                    SelectionMode="Single"
-                                    SelectedItem="{Binding SelectedContainer}"
-                                    SelectionChangedCommand="{Binding ContainerSelectedCommand}"
-                                    SelectionChangedCommandParameter="{Binding .}"
-                                    BackgroundColor="White">
-
-                        <CollectionView.GroupHeaderTemplate>
-                            <DataTemplate x:DataType="collections:IReadOnlyObservableGroup">
-                                <VerticalStackLayout BackgroundColor="{StaticResource BackgroundGray}"
-                                                     HorizontalOptions="Fill">
-                                    <Label Text="{Binding Key}"
-                                           Padding="10,5,5,5"
-                                           HorizontalOptions="Start"
-                                           VerticalOptions="Start"/>
-                                    <BoxView
-                                        Color="{StaticResource BorderGray}"
-                                        HeightRequest="1"
-                                        Margin="0,0,0,0"
-                                        HorizontalOptions="Fill"/>
-                                </VerticalStackLayout>
-                            </DataTemplate>
-                        </CollectionView.GroupHeaderTemplate>
-
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="models:ContainerModel">
-                                <VerticalStackLayout>
-                                    <Grid
-                                        RowDefinitions="Auto,Auto"
-                                        Margin="0,0,0,3"
-                                        Padding="30,10,10,10"
-                                        HorizontalOptions="Fill">
-
-                                        <Label Grid.Row="0"
-                                               Text="{Binding Name, StringFormat='{0}'}"/>
-                                        <Label Grid.Row="1"
-                                               Text="{Binding Image.Name, StringFormat='{0}'}"
-                                               TextColor="{StaticResource TextSecondary}"/>
-                                    </Grid>
-                                    <BoxView
-                                        Color="{StaticResource BorderGray}"
-                                        HeightRequest="1"
-                                        Margin="7,0,12,0"
-                                        HorizontalOptions="Fill"/>
-                                </VerticalStackLayout>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </Grid>
-            </foldable:TwoPaneView.Pane1>
-            <foldable:TwoPaneView.Pane2>
-                <Grid
-                    Margin="0"
-                    RowDefinitions="Auto,*"
-                    ColumnSpacing="0">
-
-                    <Label
-                        Text="{Binding SelectedContainer.Name}"
-                        HorizontalOptions="Start"
-                        VerticalOptions="Center"/>
-                </Grid>
-            </foldable:TwoPaneView.Pane2>
-        </foldable:TwoPaneView>
-
-
-        <!--<Grid Grid.Row="0"
-              Grid.Column="0"
-              RowDefinitions="Auto,*"
-              Margin="0"
-              ColumnSpacing="0"
-              BackgroundColor="Transparent">
-
-            <SearchBar Grid.Row="0"
-                       Margin="3"
-                       Placeholder="Search"
-                       Text="{Binding SearchText}"
-                       Style="{StaticResource SearchBarStyle}"/>
-
-            <CollectionView Grid.Row="1"
-                            ItemSizingStrategy="MeasureAllItems"
-                            ItemsSource="{Binding FilteredContainers}"
-                            IsGrouped="True"
-                            Margin="3"
-                            SelectionMode="Single"
-                            SelectedItem="{Binding SelectedContainer}"
-                            SelectionChangedCommand="{Binding ContainerSelectedCommand}"
-                            SelectionChangedCommandParameter="{Binding .}"
-                            BackgroundColor="White">
-
-                <CollectionView.GroupHeaderTemplate>
-                    <DataTemplate x:DataType="collections:IReadOnlyObservableGroup">
-                        <VerticalStackLayout BackgroundColor="{StaticResource BackgroundGray}" HorizontalOptions="Fill">
-                            <Label Text="{Binding Key}"
-                                   Padding="10,5,5,5"
-                               HorizontalOptions="Start"
-                               VerticalOptions="Start"/>
-                            <BoxView
-                                Color="{StaticResource BorderGray}"
-                                HeightRequest="1"
-                                Margin="0,0,0,0"
-                                HorizontalOptions="Fill"/>
-                        </VerticalStackLayout>
-                    </DataTemplate>
-                </CollectionView.GroupHeaderTemplate>
-
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:ContainerModel">
-                        <VerticalStackLayout>
-                            <Grid
-                                RowDefinitions="Auto,Auto"
-                                Margin="0,0,0,3"
-                                Padding="30,10,10,10"
-                                HorizontalOptions="Fill">
-
-                                <Label Grid.Row="0"
-                                       Text="{Binding Name, StringFormat='{0}'}"/>
-                                <Label Grid.Row="1"
-                                       Text="{Binding Image.Name, StringFormat='{0}'}"
-                                       TextColor="{StaticResource TextSecondary}"/>
-                            </Grid>
-                            <BoxView
-                                Color="{StaticResource BorderGray}"
-                                HeightRequest="1"
-                                Margin="7,0,12,0"
-                                HorizontalOptions="Fill"/>
-                        </VerticalStackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </Grid>-->
-
-        <!--<Grid Grid.Row="0"
-              Grid.Column="1"
-              Margin="0"
-              RowDefinitions="Auto,*"
-              ColumnSpacing="0">
-
-            <Label
-                Text="{Binding SelectedContainer.Name}"
-                HorizontalOptions="Start"
-                VerticalOptions="Center"/>
-        </Grid>-->
+    <Grid ColumnDefinitions="*" RowDefinitions="Auto, *, 28">
 
         <Grid
-            Grid.Row="1"
-            Padding="10,0"
-            ColumnDefinitions="Auto,Auto,Auto,Auto"
-            BackgroundColor="{StaticResource Gray200}">
+            Grid.Row="0"
+            Margin="16,3"
+            ColumnDefinitions="2.5*, *">
 
-            <HorizontalStackLayout Grid.Column="0"
-                                   Spacing="5">
-                <Image HeightRequest="22"
-                       Source="lan.png"/>
+            <HorizontalStackLayout>
                 <Label
-                    Text="{Binding ServiceState}"
+                    Grid.Column="0"
+                    Text="{Binding SystemInfo.Name}"
+                    VerticalOptions="End" />
+                <Label
+                    Grid.Column="0"
+                    Margin="5,0"
+                    Text="|"
+                    VerticalOptions="End" />
+                <Label
+                    Grid.Column="0"
+                    Text="{Binding SystemInfo.Os}"
+                    VerticalOptions="End" />
+                <Label
+                    Grid.Column="0"
+                    Margin="5,0"
+                    Text="|"
+                    VerticalOptions="End" />
+                <Label
+                    Grid.Column="0"
+                    Margin="0,0,5,0"
+                    Text="CPU:"
+                    VerticalOptions="End" />
+                <Label
+                    Grid.Column="0"
+                    Text="{Binding SystemInfo.CpuCores}"
+                    VerticalOptions="End" />
+                <Label
+                    Grid.Column="0"
+                    Margin="5,0"
+                    Text="|"
+                    VerticalOptions="End" />
+                <Label
+                    Grid.Column="0"
+                    Margin="0,0,5,0"
+                    Text="RAM:"
+                    VerticalOptions="End" />
+                <Label
+                    Grid.Column="0"
+                    Text="{Binding SystemInfo.MemoryInGB}"
+                    VerticalOptions="End" />
+                <Label
+                    Grid.Column="0"
+                    Margin="5,0"
+                    Text="GB"
+                    VerticalOptions="End" />
+            </HorizontalStackLayout>
+
+            <SearchBar
+                Grid.Column="1"
+                Placeholder="Search"
+                Text="{Binding SearchText}" />
+        </Grid>
+
+        <CollectionView
+            Grid.Row="1"
+            Margin="3"
+            BackgroundColor="Transparent"
+            ItemsSource="{Binding FilteredContainers}">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout
+                    HorizontalItemSpacing="10"
+                    Orientation="Vertical"
+                    Span="{Binding CollectionViewItemsLayoutSpan}"
+                    VerticalItemSpacing="10" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:ContainerModel">
+                    <Border
+                        Background="Transparent"
+                        HeightRequest="250"
+                        HorizontalOptions="Fill"
+                        StrokeShape="RoundRectangle 10,10,10,10"
+                        StrokeThickness="0.3">
+
+                        <Border.Shadow>
+                            <Shadow
+                                Opacity="0.2"
+                                Radius="5"
+                                Offset="5,5" />
+                        </Border.Shadow>
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ContainerViewModel}}, x:DataType=viewmodels:ContainerViewModel, Path=GoToDetailsCommand}" CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+
+                        <Grid
+                            HorizontalOptions="Fill"
+                            RowDefinitions="2.5*, *"
+                            VerticalOptions="Fill">
+
+                            <Image
+                                Grid.RowSpan="2"
+                                Aspect="AspectFill"
+                                Source="https://4.bp.blogspot.com/-zj8NrC1S150/UMixAwGjdBI/AAAAAAAAO_A/nkU0GZxCulQ/s1600/Designed+Abstract+Wallpapers+05.jpg" />
+
+                            <Border
+                                Grid.Row="1"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight},
+                                                                  Dark={StaticResource BackgroundDark}}"
+                                Opacity="0.9"
+                                StrokeThickness="0">
+                                <Grid
+                                    Margin="10,0"
+                                    ColumnDefinitions="*, Auto"
+                                    HorizontalOptions="Fill"
+                                    RowDefinitions="*, *"
+                                    RowSpacing="5"
+                                    VerticalOptions="Fill">
+
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        FontAttributes="Bold"
+                                        Text="{Binding Name, StringFormat='{0}'}"
+                                        VerticalTextAlignment="End" />
+
+                                    <HorizontalStackLayout
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        HorizontalOptions="Fill"
+                                        VerticalOptions="Start">
+
+                                        <BoxView
+                                            Margin="0,0,5,0"
+                                            CornerRadius="5"
+                                            HeightRequest="10"
+                                            IsVisible="{Binding State, Converter={StaticResource IsEqualConverter}, ConverterParameter=running}"
+                                            WidthRequest="10"
+                                            Color="{StaticResource Green}" />
+                                        <BoxView
+                                            Margin="0,0,5,0"
+                                            CornerRadius="5"
+                                            HeightRequest="10"
+                                            IsVisible="{Binding State, Converter={StaticResource IsEqualConverter}, ConverterParameter=exited}"
+                                            WidthRequest="10"
+                                            Color="{StaticResource Red}" />
+
+                                        <Label FontSize="10" Text="{Binding Status, StringFormat='{0}'}" />
+
+                                    </HorizontalStackLayout>
+
+
+                                    <Button
+                                        Grid.RowSpan="2"
+                                        Grid.Column="1"
+                                        BackgroundColor="Transparent"
+                                        ToolTipProperties.Text="Options">
+
+                                        <Button.ImageSource>
+                                            <FontImageSource
+                                                FontFamily="faLight"
+                                                Glyph="&#xf142;"
+                                                Size="20" />
+                                        </Button.ImageSource>
+
+                                        <FlyoutBase.ContextFlyout>
+                                            <MenuFlyout>
+                                                <MenuFlyoutItem
+                                                    Command="{Binding Source={x:Reference ContainerContentPage}, Path=BindingContext.StartContainerCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    IsEnabled="{Binding State, Converter={StaticResource IsEqualConverter}, ConverterParameter=exited}"
+                                                    Text="Start">
+                                                    <MenuFlyoutItem.IconImageSource>
+                                                        <FontImageSource FontFamily="faLight" Glyph="&#xf04b;" />
+                                                    </MenuFlyoutItem.IconImageSource>
+                                                </MenuFlyoutItem>
+                                                <MenuFlyoutItem
+                                                    Command="{Binding Source={x:Reference ContainerContentPage}, Path=BindingContext.StopContainerCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    IsEnabled="{Binding State, Converter={StaticResource IsEqualConverter}, ConverterParameter=running}"
+                                                    Text="Stop">
+                                                    <MenuFlyoutItem.IconImageSource>
+                                                        <FontImageSource FontFamily="faLight" Glyph="&#xf04d;" />
+                                                    </MenuFlyoutItem.IconImageSource>
+                                                </MenuFlyoutItem>
+                                            </MenuFlyout>
+                                        </FlyoutBase.ContextFlyout>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+
+        <Grid
+            Grid.Row="2"
+            Padding="10,0"
+            BackgroundColor="{StaticResource Gray200}"
+            ColumnDefinitions="Auto,Auto,Auto,Auto"
+            ColumnSpacing="20">
+
+            <HorizontalStackLayout Grid.Column="0" Spacing="5">
+                <Image HeightRequest="18">
+                    <Image.Source>
+                        <FontImageSource
+                            FontFamily="faLight"
+                            Glyph="&#xf6ff;"
+                            Color="Black" />
+                    </Image.Source>
+                </Image>
+                <Label
                     HorizontalOptions="Center"
-                    VerticalOptions="Center"/>
+                    Text="{Binding ServiceState}"
+                    VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout Grid.Column="1" Spacing="5">
+                <Image HeightRequest="18">
+                    <Image.Source>
+                        <FontImageSource
+                            FontFamily="faLight"
+                            Glyph="&#xf49a;"
+                            Color="Black" />
+                    </Image.Source>
+                </Image>
+                <Label
+                    HorizontalOptions="Center"
+                    Text="{Binding SystemInfo.Containers}"
+                    VerticalOptions="Center" />
             </HorizontalStackLayout>
         </Grid>
+
+        <ActivityIndicator
+            Grid.RowSpan="3"
+            Grid.ColumnSpan="1"
+            Margin="0"
+            HorizontalOptions="Fill"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Fill" />
     </Grid>
 </ContentPage>

@@ -5,4 +5,6 @@ public partial class SettingsModel : ObservableObject
     [ObservableProperty]
     private String host = string.Empty;
 
+    [ObservableProperty]
+    private Int32 theme = 0;
 }

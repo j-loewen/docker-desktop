@@ -18,7 +18,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DockerDesktop")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+4ec78386e73ddd3d6401a633b0d9871370a51941")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+589f46e0ef676f41e3f4c951ccaf2a6faa37bfe5")]
 [assembly: System.Reflection.AssemblyProductAttribute("DockerDesktop")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DockerDesktop")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

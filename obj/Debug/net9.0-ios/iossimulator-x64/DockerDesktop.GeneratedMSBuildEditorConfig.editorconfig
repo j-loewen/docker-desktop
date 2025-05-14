@@ -47,11 +47,23 @@ build_metadata.AdditionalFiles.ManifestResourceName = DockerDesktop.Resources.St
 build_metadata.AdditionalFiles.TargetPath = Resources\Styles\Styles.xaml
 build_metadata.AdditionalFiles.RelativePath = Resources\Styles\Styles.xaml
 
+[D:/Development/Apps/DockerDesktop/Views/ContainerDetailPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = DockerDesktop.Views.ContainerDetailPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\ContainerDetailPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\ContainerDetailPage.xaml
+
 [D:/Development/Apps/DockerDesktop/Views/ContainerPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = DockerDesktop.Views.ContainerPage.xaml
 build_metadata.AdditionalFiles.TargetPath = Views\ContainerPage.xaml
 build_metadata.AdditionalFiles.RelativePath = Views\ContainerPage.xaml
+
+[D:/Development/Apps/DockerDesktop/Views/HomePage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = DockerDesktop.Views.HomePage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\HomePage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\HomePage.xaml
 
 [D:/Development/Apps/DockerDesktop/Views/SettingsPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml

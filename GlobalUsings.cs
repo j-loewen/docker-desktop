@@ -4,6 +4,7 @@ global using DockerDesktop.Views;
 global using DockerDesktop.Services;
 global using DockerDesktop.Models;
 global using DockerDesktop.ViewModels;
+global using DockerDesktop.Helpers;
 global using System.Collections.ObjectModel;
 global using System.ComponentModel;
 global using System.Diagnostics;

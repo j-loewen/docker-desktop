@@ -18,9 +18,11 @@ public partial class SettingsViewModel : BaseViewModel
     private SettingsModel settings;
 
     [RelayCommand]
-    Task Save()
+    public Task Save()
     {
         this.settingsService.Save();
+        ThemeManager.SetTheme();
+
         return Task.CompletedTask;
     }
 }

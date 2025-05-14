@@ -1,281 +1,404 @@
 ﻿using Docker.DotNet;
 using Docker.DotNet.Models;
-using System.Collections.ObjectModel;
-using System.Text.Json;
-using System.Diagnostics;
+using Microsoft.Extensions.Logging;
+using System.ComponentModel;
 
 namespace DockerDesktop.Services;
 
-public class DockerService : IDisposable
-{
+public class DockerService : IDisposable {
     private readonly SettingsService settingsService;
-    private DockerClient? client;
-    private readonly Dictionary<string, CancellationTokenSource> containerStatsCancellationTokens = new();
-    private bool disposed;
+    private DockerClient? dockerClient;
+    private CancellationTokenSource? cancellationToken;
+    private Boolean disposed;
 
-    public event EventHandler<bool>? ConnectionStateChanged;
+    public event EventHandler<Boolean>? ConnectionStateChanged;
 
-    public ObservableCollection<ContainerListResponse> Container { get; } = new();
-    public ObservableCollection<ImagesListResponse> Images { get; } = new();
-    public ObservableCollection<NetworkResponse> Networks { get; } = new();
-    public ObservableCollection<VolumesListResponse> Volumes { get; } = new();
-    public SystemInfoResponse SystemInfo { get; set; } = new();
+    public ObservableCollection<ContainerModel> Container { get; } = new();
+    public ObservableCollection<ImageModel> Images { get; } = new();
+    public ObservableCollection<NetworkModel> Networks { get; } = new();
+    public ObservableCollection<VolumeModel> Volumes { get; } = new();
+    public SystemInfoModel SystemInfo { get; set; } = new();
+    public Boolean IsConnected { get; set; } = false;
 
-    public DockerService(SettingsService settingsService)
-    {
+    public DockerService(SettingsService settingsService) {
         this.settingsService = settingsService;
     }
 
-    private void UpdateConnectionState(bool connected)
-    {
-        ConnectionStateChanged?.Invoke(this, connected);
+    private void UpdateConnectionState(Boolean connected) {
+        this.IsConnected = connected;
+
+        this.ConnectionStateChanged?.Invoke(this, connected);
     }
 
-    public async Task Connect()
-    {
-        try
-        {
-            this.client = new DockerClientConfiguration(new Uri(this.settingsService.Settings.Host)).CreateClient();
+    public async Task Connect() {
+        try {
+            this.dockerClient = new DockerClientConfiguration(new Uri(this.settingsService.Settings.Host)).CreateClient();
+
+            await this.LoadSystemInfoAsync();
             await this.LoadContainersAsync();
+            await this.LoadImagesAsync();
+            await this.LoadNetworksAsync();
+            await this.LoadVolumesAsync();
+
+
+            if (this.cancellationToken is not null) {
+                this.cancellationToken.Cancel();
+                this.cancellationToken.Dispose();
+            }
+
+            this.cancellationToken = new CancellationTokenSource();
+            IProgress<Message> progress = new Progress<Message>(s => {
+                //System.Diagnostics.Debug.WriteLine($"{s.Type}: {s.Action} - {s.Actor.Attributes["name"]}");
+
+                if (s.Type.Equals("container", StringComparison.CurrentCultureIgnoreCase)) {
+                    //s.ID
+                    //s.Actor.Attributes["name"]
+                    //s.Action
+                    this.RefreshContainerAsync(s.ID).GetAwaiter();
+                } else if (s.Type.Equals("image", StringComparison.CurrentCultureIgnoreCase)) {
+                    var y = s;
+                } else if (s.Type.Equals("network", StringComparison.CurrentCultureIgnoreCase)) {
+                    //s.Actor.ID
+                    //s.Actor.Attributes["name"]
+                    //s.Actor.Attributes["container"]
+                    //s.Action
+                } else if (s.Type.Equals("volume", StringComparison.CurrentCultureIgnoreCase)) {
+                    var y = s;
+                }
+            });
+
+            _ = Task.Run(async () => await dockerClient.System.MonitorEventsAsync(new ContainerEventsParameters()
+            {
+                Filters = new Dictionary<string, IDictionary<string, bool>> {
+                    {
+                        "event", new Dictionary<string, bool> {
+                            { "start", true },
+                            { "stop", true },
+                            { "destroy", true },
+                            { "create", true },
+                            { "pull", true },
+                            { "connect", true },
+                            { "disconnect", true },
+                            { "die", true }
+                        }
+                    }, {
+                        "type", new Dictionary<string, bool> {
+                            { "container", true },
+                            { "image", true },
+                            { "network", true },
+                            { "volume", true }
+                        }
+                    }
+                }
+            }, progress, cancellationToken.Token));
+
             UpdateConnectionState(true);
-        }
-        catch
-        {
+        } catch {
             UpdateConnectionState(false);
             throw;
         }
     }
 
-    public async Task LoadContainersAsync()
-    {
-        if (this.client == null)
-        {
+    private async Task LoadSystemInfoAsync() {
+        if (this.dockerClient is null) {
             throw new InvalidOperationException("Docker client is not connected. Call Connect() first.");
         }
 
-        // Stop existing stats monitoring
-        foreach (var cts in containerStatsCancellationTokens.Values)
-        {
-            cts.Cancel();
-        }
-        containerStatsCancellationTokens.Clear();
+        SystemInfoResponse systemInfo = await this.dockerClient.System.GetSystemInfoAsync();
 
-        IList<ContainerListResponse> containers = await this.client.Containers.ListContainersAsync(new ContainersListParameters()
-        {
+        this.SystemInfo = new SystemInfoModel() {
+            Os = systemInfo.OperatingSystem,
+            Architecture = systemInfo.Architecture,
+            CpuCores = (int)systemInfo.NCPU,
+            Memory = systemInfo.MemTotal,
+            Name = systemInfo.Name,
+            Containers = (int)systemInfo.Containers,
+            ContainersRunning = (int)systemInfo.ContainersRunning,
+            ContainersStopped = (int)systemInfo.ContainersStopped,
+            ContainersPaused = (int)systemInfo.ContainersPaused,
+            Images = (int)systemInfo.Images
+        };
+    }
+
+    private async Task LoadContainersAsync() {
+        if (this.dockerClient is null) {
+            throw new InvalidOperationException("Docker client is not connected. Call Connect() first.");
+        }
+
+        this.Container.Clear();
+
+        IList<ContainerListResponse> containers = await this.dockerClient.Containers.ListContainersAsync(new ContainersListParameters() {
             All = true
         });
 
-        // Start monitoring stats for running containers
-        foreach (var container in containers.Where(c => c.State == "running"))
-        {
-            var cts = new CancellationTokenSource();
-            containerStatsCancellationTokens[container.ID] = cts;
+        foreach (var container in containers) {
+            this.Container.Add(new ContainerModel() {
+                Id = container.ID,
+                Name = (container.Names.FirstOrDefault() ?? String.Empty).TrimStart('/'),
+                State = container.State,
+                Created = container.Created,
+                Command = container.Command,
+                Image = new ImageModel() {
+                    Id = container.ImageID,
+                    Name = container.Image
+                },
+                Status = container.Status,
+                Network = new NetworkModel() {
+                    Name = (container.NetworkSettings.Networks.FirstOrDefault().Key ?? String.Empty)
+                }
+            });
 
-            //_ = MonitorContainerStatsAsync(container, cts.Token);
+            var existing = this.Container.FirstOrDefault(c => c.Id == container.ID);
+            if (existing is not null) {
+                foreach (var label in container.Labels) {
+                    existing.Labels.Add(new KeyValueModel() {
+                        Key = label.Key,
+                        Value = label.Value
+                    });
+                }
+            }
+        }
+    }
+
+    private async Task RefreshContainerAsync(String id) {
+        if (this.dockerClient is null) {
+            throw new InvalidOperationException("Docker client is not connected. Call Connect() first.");
         }
 
-        // Update container collection
-        foreach (var container in containers)
-        {
-            var existingContainer = this.Container.FirstOrDefault(c => c.ID == container.ID);
-            if (existingContainer != null)
-            {
-                var index = this.Container.IndexOf(existingContainer);
-                this.Container[index] = container;
+        IList<ContainerListResponse> containers = await this.dockerClient.Containers.ListContainersAsync(new ContainersListParameters() {
+            All = true,
+            Filters = new Dictionary<string, IDictionary<string, bool>> {
+                { "id", new Dictionary<string, bool> { { id, true } } }
             }
-            else
-            {
-                this.Container.Add(container);
+        });
+
+        if (containers.Count == 0 && this.Container.FirstOrDefault(c => c.Id == id) is not null) {
+            var existing = this.Container.FirstOrDefault(c => c.Id == id);
+
+            if (existing is not null) {
+                this.Container.Remove(existing);
+            }
+        } else if (containers.Count > 0) {
+            foreach (var container in containers) {
+                var existing = this.Container.FirstOrDefault(c => c.Id == container.ID);
+                if (existing is not null) {
+                    var idx = this.Container.IndexOf(existing);
+
+                    this.Container[idx].Name = (container.Names.FirstOrDefault() ?? string.Empty).TrimStart('/');
+                    this.Container[idx].State = container.State;
+                    this.Container[idx].Created = container.Created;
+                    this.Container[idx].Command = container.Command;
+                    this.Container[idx].Image.Id = container.ImageID;
+                    this.Container[idx].Image.Name = container.Image;
+                    this.Container[idx].Status = container.Status;
+                    this.Container[idx].Network.Name = (container.NetworkSettings.Networks.FirstOrDefault().Key ?? String.Empty);
+                    this.Container[idx].Labels.Clear();
+                    foreach (var label in container.Labels) {
+                        this.Container[idx].Labels.Add(new KeyValueModel() {
+                            Key = label.Key,
+                            Value = label.Value
+                        });
+                    }
+                } else {
+                    this.Container.Add(new ContainerModel() {
+                        Id = container.ID,
+                        Name = (container.Names.FirstOrDefault() ?? String.Empty).TrimStart('/'),
+                        State = container.State,
+                        Created = container.Created,
+                        Command = container.Command,
+                        Image = new ImageModel() {
+                            Id = container.ImageID,
+                            Name = container.Image
+                        },
+                        Status = container.Status,
+                        Network = new NetworkModel() {
+                            Name = (container.NetworkSettings.Networks.FirstOrDefault().Key ?? String.Empty)
+                        }
+                    });
+
+                    existing = this.Container.FirstOrDefault(c => c.Id == container.ID);
+                    if (existing is not null) {
+                        foreach (var label in container.Labels) {
+                            existing.Labels.Add(new KeyValueModel() {
+                                Key = label.Key,
+                                Value = label.Value
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public async Task StartContainersAsync(String id) {
+        if (this.dockerClient is null) {
+            throw new InvalidOperationException("Docker client is not connected. Call Connect() first.");
+        }
+
+        await this.dockerClient.Containers.StartContainerAsync(id, new ContainerStartParameters() { });
+    }
+
+    public async Task StopContainersAsync(String id) {
+        if (this.dockerClient is null) {
+            throw new InvalidOperationException("Docker client is not connected. Call Connect() first.");
+        }
+
+        await this.dockerClient.Containers.StopContainerAsync(id, new ContainerStopParameters() { 
+            WaitBeforeKillSeconds = 30
+        });
+    }
+
+    public async Task UpdateContainersAsync(String id) {
+        if (this.dockerClient is null) {
+            throw new InvalidOperationException("Docker client is not connected. Call Connect() first.");
+        }
+
+        await this.dockerClient.Containers.UpdateContainerAsync(id,  new ContainerUpdateParameters() {
+            
+        });
+    }
+
+    private async Task LoadImagesAsync() {
+        if (this.dockerClient is null) {
+            throw new InvalidOperationException("Docker client is not connected. Call Connect() first.");
+        }
+
+        IList<ImagesListResponse> images = await this.dockerClient.Images.ListImagesAsync(new ImagesListParameters() {
+            All = true
+        });
+
+        // Update existing containers or add new ones
+        foreach (var image in images) {
+            var existing = this.Images.FirstOrDefault(c => c.Id == image.ID);
+            if (existing is not null) {
+                var idx = this.Images.IndexOf(existing);
+
+                this.Images[idx].Name = image.RepoTags.FirstOrDefault() ?? string.Empty;
+                this.Images[idx].Size = image.Size;
+                this.Images[idx].Created = image.Created;
+            } else {
+                this.Images.Add(new ImageModel() {
+                    Id = image.ID,
+                    Name = image.RepoTags.FirstOrDefault() ?? string.Empty,
+                    Size = image.Size,
+                    Created = image.Created
+                });
+            }
+
+            var container = this.Container.FirstOrDefault(c => c.Image.Id == image.ID);
+            if (container is not null) {
+                container.Image.Name = image.RepoTags.FirstOrDefault() ?? string.Empty;
+                container.Image.Size = image.Size;
+                container.Image.Created = image.Created;
             }
         }
 
         // Remove containers that no longer exist
-        var containersToRemove = this.Container
-            .Where(c => !containers.Any(nc => nc.ID == c.ID))
+        var remove = this.Images
+            .Where(c => !images.Any(nc => nc.ID == c.Id))
             .ToList();
 
-        foreach (var container in containersToRemove)
-        {
-            this.Container.Remove(container);
-        }
-    }
-
-    //private async Task MonitorContainerStatsAsync(ContainerListResponse container, CancellationToken cancellationToken) {
-    //    try {
-    //        var parameters = new ContainerStatsParameters {
-    //            Stream = true // Enable streaming stats
-    //        };
-
-    //        using var stream = await this.client!.Containers.GetContainerStatsAsync(container.ID, parameters, cancellationToken);
-    //        using var reader = new StreamReader(stream);
-
-    //        while (!cancellationToken.IsCancellationRequested) {
-    //            var statsJson = await reader.ReadLineAsync();
-    //            if (string.IsNullOrEmpty(statsJson)) continue;
-
-    //            try {
-    //                var stats = JsonSerializer.Deserialize<ContainerStatsResponse>(statsJson);
-    //                if (stats != null) {
-    //                    UpdateContainerStats(container, stats);
-    //                }
-    //            } catch (JsonException ex) {
-    //                Debug.WriteLine($"Error parsing container stats: {ex.Message}");
-    //            }
-    //        }
-    //    } catch (OperationCanceledException) {
-    //        // Normal cancellation, ignore
-    //    } catch (Exception ex) {
-    //        Debug.WriteLine($"Error monitoring container stats: {ex.Message}");
-    //    }
-    //}
-
-    private void UpdateContainerStats(ContainerListResponse container, ContainerStatsResponse stats)
-    {
-        try
-        {
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                //var existingContainer = Container.FirstOrDefault(c => c.ID == container.ID);
-                //if (existingContainer != null) {
-                //    // Calculate CPU percentage
-                //    var cpuDelta = stats.CPUStats.CPUUsage.TotalUsage - stats.PreCPUStats.CPUUsage.TotalUsage;
-                //    var systemDelta = stats.CPUStats.SystemUsage - stats.PreCPUStats.SystemUsage;
-
-                //    if (systemDelta > 0.0) {
-                //        //existingContainer.CPUPerc = $"{(cpuDelta / systemDelta * 100.0):F2}%";
-                //    }
-
-                //    // Update memory usage
-                //    //existingContainer.SizeRootFs = stats.MemoryStats.Usage;
-
-                //    // Force UI update
-                //    var index = Container.IndexOf(existingContainer);
-                //    Container[index] = existingContainer;
-                //}
-            });
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error updating container stats: {ex.Message}");
-        }
-    }
-
-    public async Task LoadImagesAsync()
-    {
-        if (this.client == null)
-        {
-            throw new InvalidOperationException("Docker client is not connected. Call Connect() first.");
-        }
-
-        IList<ImagesListResponse> images = await this.client.Images.ListImagesAsync(new ImagesListParameters()
-        {
-            All = true
-        });
-
-        foreach (var image in images)
-        {
-            Boolean found = false;
-
-            for (int i = 0; i < this.Images.Count; i++)
-            {
-                if (this.Images[i].ID == image.ID)
-                {
-                    this.Images[i] = image;
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found)
-            {
-                this.Images.Add(image);
-            }
-        }
-
-        var imagesToRemove = this.Images
-            .Where(i => !images.Any(ni => ni.ID == i.ID))
-            .ToList();
-
-        foreach (var image in imagesToRemove)
-        {
+        foreach (var image in remove) {
             this.Images.Remove(image);
         }
     }
 
-    public async Task LoadNetworksAsync()
-    {
-        if (this.client == null)
-        {
+    private async Task LoadNetworksAsync() {
+        if (this.dockerClient is null) {
             throw new InvalidOperationException("Docker client is not connected. Call Connect() first.");
         }
 
-        IList<NetworkResponse> networks = await this.client.Networks.ListNetworksAsync(new NetworksListParameters());
+        IList<NetworkResponse> networks = await this.dockerClient.Networks.ListNetworksAsync(new NetworksListParameters());
 
-        foreach (var network in networks)
-        {
-            Boolean found = false;
+        // Update existing containers or add new ones
+        foreach (var network in networks) {
+            var existing = this.Networks.FirstOrDefault(c => c.Id == network.ID);
+            if (existing is not null) {
+                var idx = this.Networks.IndexOf(existing);
 
-            for (int i = 0; i < this.Networks.Count; i++)
-            {
-                if (this.Networks[i].ID == network.ID)
-                {
-                    this.Networks[i] = network;
-                    found = true;
-                    break;
-                }
+                this.Networks[idx].Name = network.Name;
+                this.Networks[idx].Driver = network.Driver;
+            } else {
+                this.Networks.Add(new NetworkModel() {
+                    Id = network.ID,
+                    Name = network.Name,
+                    Driver = network.Driver
+                });
             }
 
-            if (!found)
-            {
-                this.Networks.Add(network);
+            var container = this.Container.FirstOrDefault(c => c.Network.Name == network.Name);
+            if (container is not null) {
+                container.Network.Id = network.ID;
+                container.Network.Driver = network.Driver;
             }
         }
 
-        var networksToRemove = this.Networks
-            .Where(n => !networks.Any(nn => nn.ID == n.ID))
+        // Remove containers that no longer exist
+        var remove = this.Networks
+            .Where(c => !networks.Any(nc => nc.ID == c.Id))
             .ToList();
 
-        foreach (var network in networksToRemove)
-        {
+        foreach (var network in remove) {
             this.Networks.Remove(network);
         }
     }
 
-    public async Task LoadVolumesAsync()
-    {
-        if (this.client == null)
-        {
+    private async Task LoadVolumesAsync() {
+        if (this.dockerClient is null) {
             throw new InvalidOperationException("Docker client is not connected. Call Connect() first.");
         }
 
-        var volumes = await this.client.Volumes.ListAsync();
-        // TODO: Implement volume collection updates similar to other collections
+        VolumesListResponse volumes = await this.dockerClient.Volumes.ListAsync();
+
+        // Update existing containers or add new ones
+        foreach (var volume in volumes.Volumes) {
+            var existing = this.Volumes.FirstOrDefault(c => c.Name == volume.Name);
+            if (existing is not null) {
+                var idx = this.Volumes.IndexOf(existing);
+
+                this.Volumes[idx].Name = volume.Name;
+                this.Volumes[idx].Driver = volume.Driver;
+            } else {
+                this.Volumes.Add(new VolumeModel() {
+                    Name = volume.Name,
+                    Driver = volume.Driver
+                });
+            }
+        }
+
+        // Remove containers that no longer exist
+        var remove = this.Volumes
+            .Where(c => !volumes.Volumes.Any(nc => nc.Name == c.Name))
+            .ToList();
+
+        foreach (var volume in remove) {
+            this.Volumes.Remove(volume);
+        }
     }
 
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!disposed)
-        {
-            if (disposing)
-            {
-                // Cancel all stats monitoring
-                foreach (var cts in containerStatsCancellationTokens.Values)
-                {
-                    cts.Cancel();
-                    cts.Dispose();
+    protected virtual void Dispose(bool disposing) {
+        if (!disposed) {
+            if (disposing) {
+                if (this.cancellationToken is not null) {
+                    this.cancellationToken.Cancel();
+                    this.cancellationToken.Dispose();
                 }
-                containerStatsCancellationTokens.Clear();
 
-                client?.Dispose();
-                UpdateConnectionState(false);
+                if (this.dockerClient is not null) {
+                    this.dockerClient.Dispose();
+                    this.dockerClient = null;
+                }
             }
+
+            // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+            // TODO: set large fields to null
             disposed = true;
         }
     }
 
-    public void Dispose()
-    {
-        Dispose(true);
+    public void Dispose() {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
 }

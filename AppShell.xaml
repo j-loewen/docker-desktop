@@ -6,55 +6,31 @@
         xmlns:viewmodels="clr-namespace:DockerDesktop.ViewModels"
         xmlns:views="clr-namespace:DockerDesktop.Views"
         xmlns:local="clr-namespace:DockerDesktop"
-        FlyoutBehavior="Disabled"
+        FlyoutBehavior="Flyout"
         Title="Docker Desktop">
 
-        <Shell.Resources>
-                <ResourceDictionary>
-                        <Style TargetType="Shell"
-                               ApplyToDerivedTypes="True">
-                                <Setter Property="Shell.BackgroundColor"
-                                        Value="{StaticResource Primary}"/>
-                                <Setter Property="Shell.ForegroundColor"
-                                        Value="{OnPlatform WinUI={StaticResource Primary}, Default=White}"/>
-                                <Setter Property="Shell.TitleColor"
-                                        Value="White"/>
-                                <Setter Property="Shell.DisabledColor"
-                                        Value="#B4FFFFFF"/>
-                                <Setter Property="Shell.UnselectedColor"
-                                        Value="{AppThemeBinding Dark=#95FFFFFF, Light=#95000000}"/>
-                                <Setter Property="Shell.NavBarHasShadow"
-                                        Value="False"/>
-                                <Setter Property="Shell.TabBarBackgroundColor"
-                                        Value="{AppThemeBinding Dark={StaticResource Primary}, Light={StaticResource Secondary}}"/>
-                                <Setter Property="Shell.TabBarForegroundColor"
-                                        Value="{AppThemeBinding Dark={StaticResource Secondary}, Light={StaticResource Primary}}"/>
-                                <Setter Property="Shell.TabBarTitleColor"
-                                        Value="{AppThemeBinding Dark={StaticResource Secondary}, Light={StaticResource Primary}}"/>
-                                <Setter Property="Shell.TabBarUnselectedColor"
-                                        Value="{AppThemeBinding Dark=#95FFFFFF, Light=#95000000}"/>
-                        </Style>
-                </ResourceDictionary>
-        </Shell.Resources>
-
-        <FlyoutItem Title="Home"
-                    Icon="home.png">
-                <ShellContent
-                        Title="Container"
-                        Icon="home.png"
-                        Shell.NavBarIsVisible="true"
-                        ContentTemplate="{DataTemplate views:ContainerPage}"
-                        Route="ContainerPage"/>
-
-                <!-- <ShellContent
-                                Title="Images"
-                                Icon="home.png"
-                                Shell.NavBarIsVisible="true"
-                                ContentTemplate="{DataTemplate views:ContainerPage}"
-                                Route="ContainerPage"/> -->
-
-                <ShellContent Icon="settings.png"
-                              ContentTemplate="{DataTemplate views:SettingsPage}"/>
-
+        <FlyoutItem Title="Dashboard">
+                <FlyoutItem.Icon>
+                        <FontImageSource Glyph="&#xf015;"
+                                         FontFamily="faLight"
+                                         Color="Black"/>
+                </FlyoutItem.Icon>
+                <ShellContent ContentTemplate="{DataTemplate views:HomePage}"/>
+        </FlyoutItem>
+        <FlyoutItem Title="Container">
+                <FlyoutItem.Icon>
+                        <FontImageSource Glyph="&#xf49a;"
+                                         FontFamily="faLight"
+                                         Color="Black"/>
+                </FlyoutItem.Icon>
+                <ShellContent ContentTemplate="{DataTemplate views:ContainerPage}"/>
+        </FlyoutItem>
+        <FlyoutItem Title="Settings">
+                <FlyoutItem.Icon>
+                        <FontImageSource Glyph="&#xf013;"
+                                         FontFamily="faLight"
+                                         Color="Black"/>
+                </FlyoutItem.Icon>
+                <ShellContent ContentTemplate="{DataTemplate views:SettingsPage}"/>
         </FlyoutItem>
 </Shell>

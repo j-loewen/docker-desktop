@@ -1,55 +1,50 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
 <?xaml-comp compile="true" ?>
-<ResourceDictionary
-        xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-        <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
+    <!--  Note: For Android please see also Platforms\Android\Resources\values\colors.xml  -->
+    <Color x:Key="BackgroundAccent">#FF3189D7</Color>
+    <Color x:Key="BackgroundLight">#FFFFFFFF</Color>
+    <Color x:Key="SecondaryBackgroundLight">#FFE6E6E6</Color>
+    <Color x:Key="BackgroundDark">#FF181818</Color>
+    <Color x:Key="SecondaryBackgroundDark">#FF242424</Color>
 
-        <Color x:Key="Primary">#FF435EF5</Color>
-        <Color x:Key="PrimaryDark">#FF435EF5</Color>
-        <Color x:Key="PrimaryDarkText">#242424</Color>
-        <Color x:Key="Secondary">White</Color>
-        <Color x:Key="SecondaryDarkText">#FF435EF5</Color>
-        <Color x:Key="Tertiary">#FF435EF5</Color>
+    <Color x:Key="TextLight">#FF181818</Color>
+    <Color x:Key="TextDark">#FFffffff</Color>
+    <Color x:Key="TextAccent">#FFffffff</Color>
+    <Color x:Key="TextDisabledLight">#ACACAC</Color>
+    <Color x:Key="TextDisabledDark">#ACACAC</Color>
+    <Color x:Key="TextUnselectedLight">#FF181818</Color>
+    <Color x:Key="TextUnselectedDark">#FF181818</Color>
 
-        <Color x:Key="White">White</Color>
-        <Color x:Key="Black">Black</Color>
-        <Color x:Key="Magenta">#D600AA</Color>
-        <Color x:Key="MidnightBlue">#190649</Color>
-        <Color x:Key="OffBlack">#1f1f1f</Color>
+    <Color x:Key="BorderDark">#404040</Color>
+    <Color x:Key="SecondaryBorderDark">#919191</Color>
+    <Color x:Key="BorderLight">#919191</Color>
+    <Color x:Key="SecondaryBorderLight">#404040</Color>
 
-        <Color x:Key="Gray100">#F5F5F5</Color>
-        <Color x:Key="Gray200">#C8C8C8</Color>
-        <Color x:Key="Gray300">#ACACAC</Color>
-        <Color x:Key="Gray400">#919191</Color>
-        <Color x:Key="Gray500">#6E6E6E</Color>
-        <Color x:Key="Gray600">#404040</Color>
-        <Color x:Key="Gray900">#212121</Color>
-        <Color x:Key="Gray950">#141414</Color>
+    <Color x:Key="White">#FFFFFF</Color>
+    <Color x:Key="Black">#000000</Color>
+    <Color x:Key="Gray100">#F5F5F5</Color>
+    <Color x:Key="Gray200">#C8C8C8</Color>
+    <Color x:Key="LightGray">#ACACAC</Color>
+    <Color x:Key="Gray300">#ACACAC</Color>
+    <Color x:Key="Gray400">#919191</Color>
+    <Color x:Key="Gray500">#6E6E6E</Color>
+    <Color x:Key="Gray600">#404040</Color>
+    <Color x:Key="DarkGray">#404040</Color>
+    <Color x:Key="Gray900">#212121</Color>
+    <Color x:Key="Gray950">#141414</Color>
+    <Color x:Key="Gray960">#1f1f1f</Color>
 
-        <!-- Add Docker Desktop specific colors -->
-        <Color x:Key="DockerBlue">#2496ED</Color>
-        <Color x:Key="HeaderBlue">#1C77D3</Color>
-        <Color x:Key="BackgroundGray">#F0F0F3</Color>
-        <Color x:Key="BorderGray">#E5E5E5</Color>
-        <Color x:Key="TextPrimary">#24292E</Color>
-        <Color x:Key="TextSecondary">#6A737D</Color>
-        <Color x:Key="StatusGreen">#4CAF50</Color>
-        <Color x:Key="LinkBlue">#0066AA</Color>
-        <Color x:Key="TableHeaderBackground">#F5F5F5</Color>
-        <Color x:Key="BorderColor">#E5E5E5</Color>
-        <Color x:Key="StatusRunning">#28A745</Color>
-        <Color x:Key="StatusStopped">#DC3545</Color>
-        <Color x:Key="ProgressBarBackground">#E9ECEF</Color>
-        <Color x:Key="ActionButtonHover">#F6F8FA</Color>
+    <Color x:Key="Wrong">Fuchsia</Color>
+    <Color x:Key="Green">#FF0B6E14</Color>
+    <Color x:Key="Red">#FFAA2D2D</Color>
 
-        <SolidColorBrush x:Key="PrimaryBrush"
-                         Color="{StaticResource Primary}"/>
+    <!-- <SolidColorBrush x:Key="AccentBrush"
+                         Color="{StaticResource BackgroundAccent}"/>
         <SolidColorBrush x:Key="SecondaryBrush"
                          Color="{StaticResource Secondary}"/>
-        <SolidColorBrush x:Key="TertiaryBrush"
-                         Color="{StaticResource Tertiary}"/>
+
         <SolidColorBrush x:Key="WhiteBrush"
                          Color="{StaticResource White}"/>
         <SolidColorBrush x:Key="BlackBrush"
@@ -70,5 +65,5 @@
         <SolidColorBrush x:Key="Gray900Brush"
                          Color="{StaticResource Gray900}"/>
         <SolidColorBrush x:Key="Gray950Brush"
-                         Color="{StaticResource Gray950}"/>
+                         Color="{StaticResource Gray950}"/>-->
 </ResourceDictionary>

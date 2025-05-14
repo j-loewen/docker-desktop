@@ -1,20 +1,58 @@
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="DockerDesktop.Views.SettingsPage"
-             xmlns:viewmodels="clr-namespace:DockerDesktop.ViewModels"
-             xmlns:models="clr-namespace:DockerDesktop.Models"
-             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
-             ios:Page.UseSafeArea="True"
-             x:DataType="viewmodels:SettingsViewModel"
-             Title="{Binding Title}">
+<ContentPage
+    x:Class="DockerDesktop.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:models="clr-namespace:DockerDesktop.Models"
+    xmlns:viewmodels="clr-namespace:DockerDesktop.ViewModels"
+    Title="{Binding Title}"
+    ios:Page.UseSafeArea="True"
+    x:DataType="viewmodels:SettingsViewModel"
+    SizeChanged="ContentPage_SizeChanged">
 
-       <StackLayout Padding="10">
-              <Label Text="Settings"
-                     FontSize="24"
-                     HorizontalOptions="Center"/>
-              <Entry Placeholder="Host"
-                     Text="{Binding Settings.Host, Mode=TwoWay}"/>
-              <Button Text="Save"
-                      Command="{Binding SaveCommand}"/>
-       </StackLayout>
+    <Grid
+        Padding="10"
+        ColumnDefinitions="*, 3*"
+        ColumnSpacing="5"
+        RowDefinitions="Auto, Auto, Auto, *"
+        RowSpacing="5">
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            Text="Host:"
+            VerticalTextAlignment="Center" />
+        <Entry
+            Grid.Row="0"
+            Grid.Column="1"
+            Placeholder="Host"
+            Text="{Binding Settings.Host, Mode=TwoWay}" />
+        <Label
+            Grid.Row="1"
+            Grid.Column="0"
+            Text="Theme:"
+            VerticalTextAlignment="Center" />
+        <Picker
+            Grid.Row="1"
+            Grid.Column="1"
+            SelectedIndex="{Binding Settings.Theme}">
+            <Picker.Items>
+                <x:String>System</x:String>
+                <x:String>Light</x:String>
+                <x:String>Dark</x:String>
+            </Picker.Items>
+        </Picker>
+
+        <Button
+            Grid.Row="2"
+            Grid.Column="1"
+            Command="{Binding SaveCommand}"
+            Text="Save" />
+
+        <ActivityIndicator
+            Margin="0"
+            HorizontalOptions="Fill"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Fill" />
+    </Grid>
 </ContentPage>

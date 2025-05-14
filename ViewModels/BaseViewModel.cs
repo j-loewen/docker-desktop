@@ -7,7 +7,15 @@ public partial class BaseViewModel : ObservableObject
     private Boolean isBusy = false;
 
     [ObservableProperty]
-    String title = String.Empty;
+    private String title = String.Empty;
 
-    public bool IsNotBusy => !IsBusy;
+    public Boolean IsNotBusy => !IsBusy;
+
+    public virtual void OnPageSizeChanged(double width, double height) {
+        // Handle page size changes if needed
+    }
+
+    public virtual void OnNavigatedTo(NavigatedToEventArgs args) {
+        // Handle page size changes if needed
+    }
 }
