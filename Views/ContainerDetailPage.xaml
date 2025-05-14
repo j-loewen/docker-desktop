@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="DockerDesktop.Views.ContainerDetailPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:collections="clr-namespace:CommunityToolkit.Mvvm.Collections;assembly=CommunityToolkit.Mvvm"
+    xmlns:models="clr-namespace:DockerDesktop.Models"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:viewmodels="clr-namespace:DockerDesktop.ViewModels"
+    Title="{Binding Title}"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="True"
+    SizeChanged="ContentPage_SizeChanged">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:IsNullConverter x:Key="IsNullConverter" />
+            <toolkit:IsNotNullConverter x:Key="IsNotNullConverter" />
+            <toolkit:TextCaseConverter x:Key="TextToPascalCaseConverter" Type="FirstUpperRestLower" />
+            <toolkit:IsEqualConverter x:Key="IsEqualConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Command="{Binding StartContainerCommand}"
+            CommandParameter="{Binding Container}"
+            IsEnabled="{Binding Container.State, Converter={StaticResource IsEqualConverter}, ConverterParameter=exited}"
+            Text="Start">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="faLight" Glyph="&#xf04b;" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+        <ToolbarItem
+            Command="{Binding StopContainerCommand}"
+            CommandParameter="{Binding Container}"
+            IsEnabled="{Binding Container.State, Converter={StaticResource IsEqualConverter}, ConverterParameter=running}"
+            Text="Stop">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="faLight" Glyph="&#xf04d;" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+        <ToolbarItem
+            Command="{Binding UpdateContainerCommand}"
+            CommandParameter="{Binding Container}"
+            Text="Update">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="faLight" Glyph="&#xf021;" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+        <ToolbarItem
+            Command="{Binding DeleteContainerCommand}"
+            CommandParameter="{Binding Container}"
+            IsEnabled="{Binding Container.State, Converter={StaticResource IsEqualConverter}, ConverterParameter=exited}"
+            Text="Delete">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="faLight" Glyph="&#xf2ed;" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+    </ContentPage.ToolbarItems>
+
+    <Grid
+        Margin="4"
+        Padding="20,10"
+        BackgroundColor="White"
+        ColumnDefinitions="*, Auto"
+        ColumnSpacing="0"
+        IsVisible="{Binding Container, Converter={StaticResource IsNotNullConverter}}"
+        RowDefinitions="Auto,*">
+
+        <Label
+            Grid.Row="0"
+            FontSize="Title"
+            HorizontalOptions="Start"
+            Text="{Binding Container.Name}"
+            VerticalOptions="Center" />
+
+        <HorizontalStackLayout Grid.Row="0" Grid.Column="1" />
+
+        <ScrollView
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
+            Margin="0,10,0,0"
+            VerticalScrollBarVisibility="Always">
+
+            <VerticalStackLayout>
+                <Grid ColumnDefinitions="200, *">
+                    <Label Grid.Column="0" Text="State:" />
+                    <Label Grid.Column="1" Text="{Binding Container.State}" />
+                </Grid>
+                <Grid ColumnDefinitions="200, *">
+                    <Label Grid.Column="0" Text="Created:" />
+                    <Label Grid.Column="1" Text="{Binding Container.Created}" />
+                </Grid>
+                <Grid ColumnDefinitions="200, *">
+                    <Label Grid.Column="0" Text="Image:" />
+                    <Label Grid.Column="1" Text="{Binding Container.Image.Name}" />
+                </Grid>
+                <Grid ColumnDefinitions="200, *">
+                    <Label Grid.Column="0" Text="Command:" />
+                    <Label Grid.Column="1" Text="{Binding Container.Command}" />
+                </Grid>
+
+                <CollectionView
+                    Margin="3"
+                    BackgroundColor="White"
+                    HorizontalOptions="Fill"
+                    ItemSizingStrategy="MeasureAllItems"
+                    ItemsSource="{Binding Container.Labels}">
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:KeyValueModel">
+                            <Grid ColumnDefinitions="Auto, *">
+                                <Label
+                                    Grid.Column="0"
+                                    Text="{Binding Key}"
+                                    TextColor="Red" />
+                                <Label
+                                    Grid.Column="1"
+                                    Text="{Binding Value}"
+                                    TextColor="CadetBlue" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+
+        <ActivityIndicator
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="2"
+            Margin="0"
+            HorizontalOptions="Fill"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Fill" />
+    </Grid>
+</ContentPage>
